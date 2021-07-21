@@ -9,6 +9,7 @@ import Home from "./components/Home";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Switch>
           {/* <Route exact path="/" component={Home}></Route> */}
           <Route exact path="/" component={Login}></Route>
+          <Route exact path="/register" component={Register}></Route>
           <Route exact path="/about" component={About}></Route>
           <Route exact path="/contact" component={Contact}></Route>
         </Switch>
