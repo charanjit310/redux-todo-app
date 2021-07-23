@@ -1,5 +1,6 @@
 import React from 'react'
 import "../assets/Register.css";
+import { Link } from 'react-router-dom';
 
 function Login() {
   return (
@@ -7,14 +8,18 @@ function Login() {
       <div className="container login-container">
         <div className="row justify-content-center">
           <div className="col-md-6 login-form-1 ">
-            <h3>Login</h3>
+            <h3>Login </h3>
+            <div className="form-group text-center">
+              <span>Don't have an account ? </span>
+              <Link className="linkbtn" to="/register">Sign up</Link>
+            </div>
             <form>
               <div className="form-group mb-3">
-                <input type="text" className="form-control" placeholder="Your Email *" value="" />
+                <input type="text" name="email" className="form-control" placeholder="Your Email *" value="" />
               </div>
 
               <div className="form-group mb-3">
-                <input type="password" className="form-control" placeholder="Your Password *" value="" />
+                <input type="password" name="password" className="form-control" placeholder="Your Password *" value="" />
               </div>
               <div className="form-group">
                 <input type="submit" className="btnSubmit" value="Login" />
