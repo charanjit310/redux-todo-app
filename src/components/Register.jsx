@@ -6,7 +6,7 @@ import "../assets/Register.css";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import { addUser } from '../Resux/Actions/ActionCreator';
+import { addUser } from '../Redux/Actions/ActionCreator';
 
 const schema = yup.object().shape({
   fullname: yup.string().required('Name is required'),
