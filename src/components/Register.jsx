@@ -1,10 +1,12 @@
 import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom';
 import "../assets/Register.css";
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { addUser } from '../Resux/Actions/ActionCreator';
 
 const schema = yup.object().shape({
   fullname: yup.string().required('Name is required'),
@@ -13,11 +15,13 @@ const schema = yup.object().shape({
 });
 
 function Register() {
+  const dispatch = useDispatch();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
   const submitForm = (data) => {
-    console.log(data);
+    // console.log(data);
+    dispatch(addUser(data))
   }
   return (
     <div>
@@ -27,17 +31,17 @@ function Register() {
             <h3>Sign up </h3>
             <form onSubmit={handleSubmit(submitForm)}>
               <div className="form-group mb-3">
-                <input type="text" {...register('fullname')} className="form-control" autoComplete="off" placeholder="Your Name *" />
+                <input type="text" {...register('fullname')} className="form-control" placeholder="Your Name *" />
                 <span className="red">{errors.fullname && errors.fullname.message}</span>
               </div>
 
               <div className="form-group mb-3">
-                <input type="text" {...register('email')} className="form-control" autoComplete="off" placeholder="Your Email *" />
+                <input type="text" {...register('email')} className="form-control" placeholder="Your Email *" />
                 <span className="red">{errors.email && errors.email.message}</span>
               </div>
 
               <div className="form-group mb-3">
-                <input type="password" {...register('password')} className="form-control" autoComplete="off" placeholder="Your Password *" />
+                <input type="password" {...register('password')} className="form-control" placeholder="Your Password *" />
                 <span className="red">{errors.password && errors.password.message}</span>
               </div>
               <div className="form-group mb-3">
