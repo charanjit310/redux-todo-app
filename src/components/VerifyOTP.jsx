@@ -8,7 +8,7 @@ import * as yup from "yup";
 
 const schema = yup.object().shape({
   email: yup.string().email('Email must be valid').required('Email is required'),
-  otp: yup.string().required('OTP is required').min(6).max(8),
+  otp: yup.string().required('OTP is required').min(5).max(8),
 });
 
 function VerifyOTP() {
