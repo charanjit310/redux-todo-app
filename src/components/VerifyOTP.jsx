@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "../assets/Register.css";
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,11 +12,15 @@ const schema = yup.object().shape({
 });
 
 function VerifyOTP() {
+  const [loader, setLoader] = useState(false);
+  let history = useHistory();
+
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
   const submitForm = (data) => {
     console.log(data);
+    setLoader(true);
   }
   return (
     <div>
@@ -27,17 +31,18 @@ function VerifyOTP() {
             <form onSubmit={handleSubmit(submitForm)}>
               <div className="form-group mb-3">
                 <input type="text" {...register('email')} className="form-control" placeholder="Your Email *" />
+                <span className="red">{errors.email && errors.email.message}</span>
               </div>
-              <span className="red">{errors.email && errors.email.message}</span>
 
               <div className="form-group mb-3">
                 <input type="text" {...register('otp')} className="form-control" placeholder="Enter OTP *" />
+                <span className="red">{errors.otp && errors.otp.message}</span>
               </div>
-              <span className="red">{errors.otp && errors.otp.message}</span>
 
-              <div className="form-group text-center">
-                <input type="submit" className="btnSubmit col-md-12" value="Verify OTP" />
-              </div>
+              <button className="btn btn-primary btnSubmit" disabled={loader}>
+                {!loader || <span className="spinner-border spinner-border-sm " style={{ marginRight: '11px' }}> </span>}
+                Verify OTP
+              </button>
             </form>
           </div>
         </div>

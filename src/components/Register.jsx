@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Link } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import "../assets/Register.css";
 
 import { useForm } from 'react-hook-form';
@@ -8,8 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 import { addUser } from '../Redux/Actions/ActionCreator';
-import axios from '../Instances/axiosInstance';
-
+import axios from '../Services/axiosInstance';
 
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
@@ -22,16 +21,23 @@ const schema = yup.object().shape({
 });
 
 function Register() {
+  const [loader, setLoader] = useState(false);
+  let history = useHistory();
   const dispatch = useDispatch();
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
   const submitForm = (data) => {
+    setLoader(true);
     console.log(data);
     // dispatch(addUser(data))
     axios.post('/register', data)
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
+        if (response.data.statusCode == 200) {
+          setLoader(false);
+          history.push('/verifyOTP')
+        }
       });
   }
   return (
@@ -70,9 +76,10 @@ function Register() {
                 <span className="red">{errors.user_type && errors.user_type.message}</span>
               </div>
 
-              <div className="form-group mb-3">
-                <input type="submit" className="btnSubmit" value="Sign up" />
-              </div>
+              <button className="btn btn-primary btnSubmit" disabled={loader}>
+                {!loader || <span className="spinner-border spinner-border-sm " style={{ marginRight: '11px' }}> </span>}
+                Sign up
+              </button>
               <div className="form-group text-center ">
                 <span>Already have account? </span><Link className="ForgetPwd" to="/">Login</Link>
               </div>
@@ -80,7 +87,7 @@ function Register() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
