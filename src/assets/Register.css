@@ -56,3 +56,9 @@
 .red{
   color: red;
 }
+.flash-error-msg{
+  color: red;
+  background: aquamarine;
+  background: blanchedalmond;
+  padding: 7px;
+}

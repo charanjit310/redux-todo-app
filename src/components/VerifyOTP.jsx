@@ -6,6 +6,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
+import axios from '../Services/axiosInstance';
+import ErrorMessage from './ErrorMessage';
+
 const schema = yup.object().shape({
   email: yup.string().email('Email must be valid').required('Email is required'),
   otp: yup.string().required('OTP is required').min(5).max(8),
@@ -13,6 +16,7 @@ const schema = yup.object().shape({
 
 function VerifyOTP() {
   const [loader, setLoader] = useState(false);
+  let [errorMsg, setErrorMsg] = useState('');
   let history = useHistory();
 
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -21,6 +25,21 @@ function VerifyOTP() {
   const submitForm = (data) => {
     console.log(data);
     setLoader(true);
+    // errorMsg
+    axios.post('/validate-otp', data)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.statusCode == 200) {
+          history.push('/login')
+        }
+      }).catch((error) => {
+        console.log(error);
+        if (error.response) {
+          console.log(error.response.data);
+          setErrorMsg(error.response.data.message)
+        }
+        setLoader(false);
+      });
   }
   return (
     <div>
@@ -28,7 +47,11 @@ function VerifyOTP() {
         <div className="row justify-content-center">
           <div className="col-md-6 login-form-1 ">
             <h3>Verify OTP </h3>
+
             <form onSubmit={handleSubmit(submitForm)}>
+
+              {(errorMsg != '') ? <ErrorMessage errorMsg={errorMsg} /> : ''}
+
               <div className="form-group mb-3">
                 <input type="text" {...register('email')} className="form-control" placeholder="Your Email *" />
                 <span className="red">{errors.email && errors.email.message}</span>
@@ -47,7 +70,7 @@ function VerifyOTP() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
