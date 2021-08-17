@@ -10,8 +10,23 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import VerifyOTP from "./components/VerifyOTP";
 
 function App() {
+  console.log('ddd');
+  // let p = new Promise((res, rej) => {
+  //   let i = 3
+  //   if (i == 2) {
+  //     res('SUCCESS')
+  //   }
+  //   rej("ERROR");
+  // })
+  // p.then((messages) => {
+  //   console.log('this is in then ' + messages);
+  // }).catch((errorMessage) => {
+  //   console.log('this is in catch ' + errorMessage);
+  // })
+
   return (
     <Router>
       <div>
@@ -22,6 +37,7 @@ function App() {
           <Route exact path="/register" component={Register}></Route>
           <Route exact path="/about" component={About}></Route>
           <Route exact path="/contact" component={Contact}></Route>
+          <Route exact path="/verifyOTP" component={VerifyOTP}></Route>
         </Switch>
       </div>
     </Router>

@@ -1,0 +1,59 @@
+
+https://stackblitz.com/edit/react-wjdepp
+https://randomuser.me/api/
+https://jsonplaceholder.typicode.com/users
+--------react-form-hook--------
+npm install react-hook-form
+npm install @hookform/resolvers
+npm install yup
+--------Redux--------------
+npm install redux react-redux
+
+-------redux-devtools-extension----
+npm install redux-devtools-extension
+
+
+
+what are the parameters of creatStore()
+https://blog.logrocket.com/localstorage-javascript-complete-guide/
+what is helpers/history.js
+null vs undefined https://stackoverflow.com/a/5076962
+
+
+
+  // import { Storage } from "./services/storage.service";
+  // const userKeyPrefix = 'users'
+  // const setUser = Storage.setJSON(userKeyPrefix, { name: 'aaa' })
+  // const allUsers = Storage.getJSON(userKeyPrefix)
+  // console.log(allUsers);
+
+
+Redux Thunk is middleware that allows action creator to return function rather than the object 
+or just actions.
+With the help of the redux-thunk we can pass actions creator to our dispatch() that perform 
+some side3effects like API's call to server and to responses of these api calls we can dispatch other 
+action creators
+
+WF-Admin-Page-22 :- Download Report Questionaire:- what is the format of the Questionaire report.
+WF-SP-Page-22 :- Download Report Questionaire:- what is the format of the Questionaire report.
+
+
+
+
+console.log(abc())
+fucntion abc(){ console.log('something')}
+clousers :- it gives proivate sapce to your variable
+[a,b] =[b,a]
+event loop
+micro servives ? : monolethic:- this is another type
+lazy loading
+binear linear 
+sort, map
+var, let, cosnt , clousers
+pass state from child to parent component ?
+how javascript runs i browswers
+callbacks ?
+diff map vs forech
+covert obj to array 
+why use react 
+useRef

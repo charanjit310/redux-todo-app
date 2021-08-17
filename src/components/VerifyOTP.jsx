@@ -8,10 +8,10 @@ import * as yup from "yup";
 
 const schema = yup.object().shape({
   email: yup.string().email('Email must be valid').required('Email is required'),
-  password: yup.string().required('Password is required').min(6).max(8),
+  otp: yup.string().required('OTP is required').min(6).max(8),
 });
 
-function Login() {
+function VerifyOTP() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
@@ -23,13 +23,7 @@ function Login() {
       <div className="container login-container">
         <div className="row justify-content-center">
           <div className="col-md-6 login-form-1 ">
-            <h3>Login </h3>
-            <div className="form-group text-center">
-              <span>Don't have an account ? </span>
-              <Link className="linkbtn" to="/register">Sign up</Link>
-              <span> ? </span>
-              <Link className="linkbtn" to="/verifyOTP">verify OTP</Link>
-            </div>
+            <h3>Verify OTP </h3>
             <form onSubmit={handleSubmit(submitForm)}>
               <div className="form-group mb-3">
                 <input type="text" {...register('email')} className="form-control" placeholder="Your Email *" />
@@ -37,15 +31,12 @@ function Login() {
               <span className="red">{errors.email && errors.email.message}</span>
 
               <div className="form-group mb-3">
-                <input type="password" {...register('password')} className="form-control" placeholder="Your Password *" />
+                <input type="text" {...register('otp')} className="form-control" placeholder="Enter OTP *" />
               </div>
-              <span className="red">{errors.password && errors.password.message}</span>
+              <span className="red">{errors.otp && errors.otp.message}</span>
 
-              <div className="form-group">
-                <input type="submit" className="btnSubmit" value="Login" />
-              </div>
-              <div className="form-group text-end">
-                <a href="#" className="ForgetPwd">Forget Password?</a>
+              <div className="form-group text-center">
+                <input type="submit" className="btnSubmit col-md-12" value="Verify OTP" />
               </div>
             </form>
           </div>
@@ -55,4 +46,4 @@ function Login() {
   )
 }
 
-export default Login
+export default VerifyOTP
