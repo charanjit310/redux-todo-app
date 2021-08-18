@@ -3,12 +3,10 @@ import { actionTypes } from '../Actions/actionTypes'
 
 const userKeyPrefix = 'users'
 let getUsers = Storage.getJSON(userKeyPrefix)
+let getState = Storage.getJSON('_state')
 
-const initialState = {
-  loggedIn: false,
-  user: {},
-  allUsers: getUsers,
-}
+const initialState = getState || { loggedIn: false, user: {} }
+
 const registerReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.ADD_USER:
@@ -27,6 +25,18 @@ const registerReducer = (state = initialState, action) => {
         user: action.payload,
         allUsers: getUsers
       }
+    case actionTypes.LOGIN:
+      console.log('1111 LOGIN');
+      console.log(action.payload);
+      const newState = {
+        ...state,
+        loggedIn: true,
+        user: action.payload.data,
+      }
+      Storage.setJSON('_token', action.payload.data.token)
+      Storage.setJSON('_state', newState)
+      return newState
+
     default:
       return state
   }

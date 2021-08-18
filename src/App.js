@@ -11,9 +11,18 @@ import Contact from "./components/Contact";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import VerifyOTP from "./components/VerifyOTP";
+import { useSelector, useDispatch } from 'react-redux'
 
 function App() {
   console.log('ddd');
+  const isLoggedIn = useSelector((state) => {
+    return state.registerReducer.loggedIn
+  })
+  console.log(isLoggedIn);
+  let component = Login
+  if (isLoggedIn) {
+    component = Home
+  }
   // let p = new Promise((res, rej) => {
   //   let i = 3
   //   if (i == 2) {
@@ -33,7 +42,7 @@ function App() {
         <Navbar />
         <Switch>
           {/* <Route exact path="/" component={Home}></Route> */}
-          <Route exact path="/" component={Login}></Route>
+          <Route exact path="/" component={component}></Route>
           <Route exact path="/register" component={Register}></Route>
           <Route exact path="/about" component={About}></Route>
           <Route exact path="/contact" component={Contact}></Route>

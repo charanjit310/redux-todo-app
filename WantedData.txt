@@ -57,6 +57,8 @@ covert obj to array
 why use react 
 useRef
 https://dev.to/banesag/javascript-logical-operators-and-boolean-values-1l07
+how to state persists reactjs
+Optional chaining (?.)
 
     //Instead of...
     const var2 = var1 ? var1 : "something";
@@ -82,3 +84,14 @@ https://dev.to/banesag/javascript-logical-operators-and-boolean-values-1l07
     console.log(a && b);  // false
     console.log((c > 2) && (c < 2)); // false
     && evaluates to true if both the operands are true, else evaluates to false.
+
+
+ <div>
+                {
+                  console.log(errorMsg);
+                (errorMsg != '') ?
+                <div className="flash-error-msg">
+                  <span>{errorMsg}</span>
+                </div> : ''
+                }
+              </div>

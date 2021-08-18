@@ -6,3 +6,10 @@ export const addUser = (user) => {
     payload: user
   }
 }
+
+export const login = (user) => {
+  return {
+    type: actionTypes.LOGIN,
+    payload: user
+  }
+}

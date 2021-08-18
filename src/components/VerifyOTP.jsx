@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import "../assets/Register.css";
 import { Link, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux'
+
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 import axios from '../Services/axiosInstance';
+
 import ErrorMessage from './ErrorMessage';
+import { login } from '../Redux/Actions/ActionCreator';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email must be valid').required('Email is required'),
@@ -18,6 +22,8 @@ function VerifyOTP() {
   const [loader, setLoader] = useState(false);
   let [errorMsg, setErrorMsg] = useState('');
   let history = useHistory();
+  const dispatch = useDispatch();
+
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -25,12 +31,13 @@ function VerifyOTP() {
   const submitForm = (data) => {
     console.log(data);
     setLoader(true);
-    // errorMsg
     axios.post('/validate-otp', data)
       .then((response) => {
         console.log(response.data);
+        setLoader(false);
         if (response.data.statusCode == 200) {
-          history.push('/login')
+          dispatch(login(response.data))
+          history.push('/')
         }
       }).catch((error) => {
         console.log(error);
