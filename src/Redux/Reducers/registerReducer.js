@@ -26,8 +26,6 @@ const registerReducer = (state = initialState, action) => {
         allUsers: getUsers
       }
     case actionTypes.LOGIN:
-      console.log('1111 LOGIN');
-      console.log(action.payload);
       const newState = {
         ...state,
         loggedIn: true,
@@ -36,31 +34,9 @@ const registerReducer = (state = initialState, action) => {
       Storage.setJSON('_token', action.payload.data.token)
       Storage.setJSON('_state', newState)
       return newState
-      return {
-        ...state,
-        loggedIn: true,
-        user: action.payload,
-        allUsers: getUsers
-      }
     case actionTypes.LOGOUT:
-      console.log('1111 LOGOUT d');
       localStorage.clear();
       return { ...state, loggedIn: false, user: {} }
-    // const newState = {
-    //   ...state,
-    //   loggedIn: true,
-    //   user: action.payload.data,
-    // }
-    // Storage.setJSON('_token', action.payload.data.token)
-    // Storage.setJSON('_state', newState)
-    // return newState
-    // return {
-    //   ...state,
-    //   loggedIn: true,
-    //   user: action.payload,
-    //   allUsers: getUsers
-    // }
-
     default:
       return state
   }

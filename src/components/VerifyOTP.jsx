@@ -33,8 +33,6 @@ function VerifyOTP() {
     setLoader(true);
     axios.post('/validate-otp', data)
       .then((response) => {
-        console.log(response.data);
-        setLoader(false);
         if (response.data.statusCode == 200) {
           dispatch(login(response.data))
           history.push('/home')
@@ -42,7 +40,6 @@ function VerifyOTP() {
       }).catch((error) => {
         console.log(error);
         if (error.response) {
-          console.log(error.response.data);
           setErrorMsg(error.response.data.message)
         }
         setLoader(false);
