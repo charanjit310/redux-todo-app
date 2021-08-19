@@ -12,17 +12,15 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import VerifyOTP from "./components/VerifyOTP";
 import { useSelector, useDispatch } from 'react-redux'
+import { AuthsService } from "./Services/auth.service";
+import { PrivateRoute, GuestRoute } from "./midleweres";
+
 
 function App() {
-  console.log('ddd');
   const isLoggedIn = useSelector((state) => {
     return state.registerReducer.loggedIn
   })
   console.log(isLoggedIn);
-  let component = Login
-  if (isLoggedIn) {
-    component = Home
-  }
   // let p = new Promise((res, rej) => {
   //   let i = 3
   //   if (i == 2) {
@@ -35,18 +33,17 @@ function App() {
   // }).catch((errorMessage) => {
   //   console.log('this is in catch ' + errorMessage);
   // })
-
   return (
     <Router>
       <div>
-        <Navbar />
+        {isLoggedIn && <Navbar />}
         <Switch>
-          {/* <Route exact path="/" component={Home}></Route> */}
-          <Route exact path="/" component={component}></Route>
-          <Route exact path="/register" component={Register}></Route>
-          <Route exact path="/about" component={About}></Route>
-          <Route exact path="/contact" component={Contact}></Route>
-          <Route exact path="/verifyOTP" component={VerifyOTP}></Route>
+          <GuestRoute exact path="/login" component={Login}></GuestRoute>
+          <GuestRoute exact path="/register" component={Register}></GuestRoute>
+          <GuestRoute exact path="/verifyOTP" component={VerifyOTP}></GuestRoute>
+          <PrivateRoute exact path="/home" component={Home}></PrivateRoute>
+          <PrivateRoute exact path="/about" component={About}></PrivateRoute>
+          <PrivateRoute exact path="/contact" component={Contact}></PrivateRoute>
         </Switch>
       </div>
     </Router>

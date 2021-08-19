@@ -13,3 +13,9 @@ export const login = (user) => {
     payload: user
   }
 }
+
+export const logout = () => {
+  return {
+    type: actionTypes.LOGOUT,
+  }
+}

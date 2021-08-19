@@ -1,2 +1,2 @@
-export { addUser, login } from "./register.action";
+export { addUser, login, logout } from "./register.action";
 

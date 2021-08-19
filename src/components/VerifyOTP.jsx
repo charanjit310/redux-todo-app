@@ -37,7 +37,7 @@ function VerifyOTP() {
         setLoader(false);
         if (response.data.statusCode == 200) {
           dispatch(login(response.data))
-          history.push('/')
+          history.push('/home')
         }
       }).catch((error) => {
         console.log(error);

@@ -3,11 +3,11 @@ import React from 'react'
 function Home(props) {
   return (
     <div>
-      <div class="container">
+      <div className="container">
         <h2>User Listing</h2>
-        <div class="row">
-          <div class="col-md-12" style={{ background: '' }}>
-            <table class="table">
+        <div className="row">
+          <div className="col-md-12" style={{ background: '' }}>
+            <table className="table">
               <thead>
                 <tr>
                   <th>Firstname</th>
@@ -35,7 +35,7 @@ function Home(props) {
             </table>
           </div>
         </div>
-        <div class="row" style={{ background: 'grey' }}>
+        <div className="row" style={{ background: 'grey' }}>
           <b>TWO</b>
         </div>
       </div>

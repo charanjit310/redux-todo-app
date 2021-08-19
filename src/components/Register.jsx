@@ -27,19 +27,19 @@ function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
+
   const submitForm = (data) => {
     setLoader(true);
-    console.log(data);
     // dispatch(addUser(data))
     axios.post('/register', data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.statusCode == 200) {
           setLoader(false);
           history.push('/verifyOTP')
         }
       });
   }
+
   return (
     <div>
       <div className="container login-container">
@@ -81,7 +81,7 @@ function Register() {
                 Sign up
               </button>
               <div className="form-group text-center ">
-                <span>Already have account? </span><Link className="ForgetPwd" to="/">Login</Link>
+                <span>Already have account? </span><Link className="ForgetPwd" to="/login">Login</Link>
               </div>
             </form>
           </div>
