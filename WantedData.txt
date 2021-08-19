@@ -59,11 +59,19 @@ useRef
 https://dev.to/banesag/javascript-logical-operators-and-boolean-values-1l07
 how to persists state  reactjs
 Optional chaining (?.)
+    
 
-    //Instead of...
+    const a = true
+    console.log(a) // true ('a' is true)
+    console.log(!a) // false ('a' is false)
+
+    //Instead of using ternary operator use '||'
+    const var1 = 0 // false value
     const var2 = var1 ? var1 : "something";
-    //...use || operator
-    const var2 = var1 || "something";
+    const var3 = var1 || "something";
+    console.log(!!var1) // false
+    console.log(var2)   // "something"
+    console.log(var3)   // "something"
 
     // logical NOT
     const a = true, b = false;
@@ -76,7 +84,7 @@ Optional chaining (?.)
     console.log(a || b); // true
     console.log(b || b); // false
     console.log((c>2) || (c<2)); // true
-    || evaluates to true if either of the operands is true. If both operands are false,
+    || evaluates to true if either of the operands is true. And evaluates to false If both operands are false,
 
     // logical AND
     const a = true, b = false; c = 4;
