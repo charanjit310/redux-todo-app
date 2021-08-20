@@ -107,3 +107,20 @@ Optional chaining (?.)
     var foo = "Hello World!";
     !foo // Result: false :- ! it evaluates to true if the operand is false and vice-versa
     !!foo // Result: true :- !! it converts any obj to boolean and gives the original value in the form of boolean
+
+    // ?? operator:- it only checks for null or undefined.
+    foo ?? bar
+    would be the same as:
+    foo != null ? foo : bar
+
+    // Spread operators :- Adding array elements to an existing array
+    const arr = [1, 2, 3];
+    const arr2 = [...arr];
+
+    // Rest  operators :- collapsing all remaining arguments of a function into one array
+    function sum( first, ...others ) {
+    for ( var i = 0; i < others.length; i++ )
+        first += others[i];
+        return first;
+    }
+    console.log(sum(1,2,3,4))// sum(1, 2, 3, 4) == 10;
