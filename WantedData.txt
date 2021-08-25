@@ -7,6 +7,7 @@ npm install @hookform/resolvers
 npm install yup
 --------Redux--------------
 npm install redux react-redux
+npm install react-js-pagination
 
 -------redux-devtools-extension----
 npm install redux-devtools-extension
@@ -32,12 +33,6 @@ or just actions.
 With the help of the redux-thunk we can pass actions creator to our dispatch() that perform 
 some side3effects like API's call to server and to responses of these api calls we can dispatch other 
 action creators
-
-WF-Admin-Page-22 :- Download Report Questionaire:- what is the format of the Questionaire report.
-WF-SP-Page-22 :- Download Report Questionaire:- what is the format of the Questionaire report.
-
-
-
 
 console.log(abc())
 fucntion abc(){ console.log('something')}
@@ -92,7 +87,9 @@ Optional chaining (?.)
     console.log(a && b);  // false
     console.log((c > 2) && (c < 2)); // false
     && evaluates to true if both the operands are true, else evaluates to false.The value returned will be the last truthy value if they are all true, but it will return the first falsy value if at least one value is false.
-    
+    another ex :- 
+    {user && someFunction()} // this function run someFunction() only if 'user' is not null
+
     // Double NOT (!!)
     Using double negation (!!) can help you to find if a value is truthy or falsy,
       ex:- 
@@ -124,3 +121,21 @@ Optional chaining (?.)
         return first;
     }
     console.log(sum(1,2,3,4))// sum(1, 2, 3, 4) == 10;
+
+    // pass direct hanldler vs handler in arrow function 
+    <button onClick={() => deleteAccount()}>Delete My Account</button>
+    in above code you are passing click event handler function to onclick which make call to deleteAccount function, while in below code
+
+    <button onClick={deleteAccount}>Delete My Account</button>
+    you are directly passing deleteAccount as click handler to component. you can use the first one when you want to process event object before calling deletedAccount and second one when you want directly call deleteAccount.
+
+    useCallback() in clickHadler ??????
+    
+    useCallback:- useCallback is to memoize a callback itself (referential equality) between renders.
+      The useCallback hook is used when you have a component in which the child is rerendering again and again without need.
+      Pass an inline callback and an array of dependencies. useCallback will return a memoized version of the callback that only changes if one of the dependencies has changed.
+      This is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary renders.
+    useMemo :- allows you to memoize expensive functions so that you can avoid calling them on every render. You simple pass in a function and an array of inputs and useMemo will only recompute the memoized value when one of the inputs has changed
+    useRef is to keep data between renders (updating does not fire re-rendering)
+    Dependencies array:- Dependencies array for useCallback and useMemo is the state value of the component 
+    React.memo :- it only re renders component when the props of component have changed
