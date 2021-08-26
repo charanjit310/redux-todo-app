@@ -3,9 +3,11 @@ import "../assets/CustomTables.css";
 import { useSelector, useDispatch } from 'react-redux'
 import { DashboardServices } from '../Services/dashboard.service';
 import Pagination from 'react-js-pagination';
+import UserLists from './UserItems';
 
 function Home() {
   const dispatch = useDispatch();
+  const [pageRenderCount, setPageRenderCount] = useState(1)
   const [userList, setUserList] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -31,36 +33,24 @@ function Home() {
 
   }, [currentPage]);
 
-  const handleEdit = (id) => {
-    alert(id)
-  }
+  const handleEdit = useCallback( // useCallback memoize function and re-create function when UserList updated
+    (id) => {
+      console.log('handleEdit');
+      setPageRenderCount(pageRenderCount + 1);
+    },
+    [userList],
+  )
 
-  const handleDelete = (id) => {
-    alert(id)
-  }
+  const handleDelete = useCallback(
+    (id) => {
+      console.log('handleDelete');
+    },
+    [userList],
+  )
 
-  const renderList = (list) => {
+  const renderPagination = ({ current_page, total, per_page }) => {
     return (
-      list.map((list) => {
-        return (
-          <tr key={list.id}>
-            <td>{list.id}</td>
-            <td>{list.name}</td>
-            <td>{list.email}</td>
-            <td>{list.phone}</td>
-            <td>
-              <button onClick={() => handleEdit(list.id)} className="btn btn-primary" >Edit</button>
-              <button onClick={() => handleDelete(list.id)} className="btn btn-danger" style={{ marginLeft: 10 }}>Delete</button>
-            </td>
-          </tr>
-        )
-      })
-    )
-  }
-
-  const renderPaginatioin = ({ current_page, total, per_page }) => {
-    return (
-      <div className="col-12 mt-4 text-end">
+      <div className="col-12 mt-4">
         <Pagination
           activePage={current_page}
           totalItemsCount={total}
@@ -77,13 +67,9 @@ function Home() {
     )
   }
 
-  // // Logic for displaying todos
-  // const indexOfLastTodo = currentPage * perPage;
-  // const indexOfFirstTodo = indexOfLastTodo - perPage;
-  // const currentTodos = todos.slice(indexOfFirstTodo, indexOfLastTodo);
-  // // https://academind.com/tutorials/reactjs-pagination/
-  // // https://hemanta.io/implement-pagination-search-and-filter-in-a-react-app-part-3/
-  // // https://stackoverflow.com/questions/40232847/how-to-implement-pagination-in-react
+  // https://academind.com/tutorials/reactjs-pagination/
+  // https://hemanta.io/implement-pagination-search-and-filter-in-a-react-app-part-3/
+  // https://stackoverflow.com/questions/40232847/how-to-implement-pagination-in-react
   return (
     <div>
       <div className="container">
@@ -103,11 +89,11 @@ function Home() {
                 </tr>
               </thead>
               <tbody>
-                {loading && <tr><td colSpan="5" className="text-center"><span className="spinner-grow text-primary " style={{ marginRight: '11px' }}> </span></td></tr>}
-                {!loading && renderList(userList)}
+                {loading && <tr><td colSpan="5" className="text-center"><span className="spinner-grow text-primary"> </span></td></tr>}
+                <UserLists handleEdit={handleEdit} handleDelete={handleDelete} list={userList} />
               </tbody>
             </table>
-            {!loading && renderPaginatioin(paginationData)}
+            {!loading && renderPagination(paginationData)}
           </div>
         </div>
       </div>
