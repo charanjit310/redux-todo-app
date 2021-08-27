@@ -24,10 +24,15 @@ function Home() {
         setLoading(false)
       }
     }).catch((error) => {
-      if (error.response) {
-        // setErrorMsg(error.response.data.message)
-      }
+      console.log(error.response);
+      // setErrorMsg(error.response.data.message)
     })
+
+    DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
+      console.log(resss);
+    }).catch((error) => {
+      console.log(error.response);
+    });
 
     return () => isSubscribed = false // cleanup function 
 

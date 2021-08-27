@@ -89,6 +89,7 @@ Optional chaining (?.)
     && evaluates to true if both the operands are true, else evaluates to false.The value returned will be the last truthy value if they are all true, but it will return the first falsy value if at least one value is false.
     another ex :- 
     {user && someFunction()} // this function run someFunction() only if 'user' is not null
+    const var3 = var1 || "something"; // this will return var1 if its exists otherwise "something"
 
     // Double NOT (!!)
     Using double negation (!!) can help you to find if a value is truthy or falsy,
@@ -139,3 +140,9 @@ Optional chaining (?.)
     useRef is to keep data between renders (updating does not fire re-rendering)
     Dependencies array:- Dependencies array for useCallback and useMemo is the state value of the component 
     React.memo :- it only re renders component when the props of component have changed
+
+
+    Async Await :- async/await allows us to write asynchronous code in a synchronous manner.
+    The one thing you need to know about async functions is that; they always returns a promise.
+    In the case where we explicitly return something that is not a promise, like above, the return value is 
+    automatically wrapped into a resolved promise with the resolved value 

@@ -33,6 +33,24 @@ function App() {
   // }).catch((errorMessage) => {
   //   console.log('this is in catch ' + errorMessage);
   // })
+
+  // async function harry() { // async functions always returns Promise
+  //   console.log('before fetch');
+  //   let res = await fetch('https://api.github.com/users)
+  //   res = await res.json();
+  //   console.log('after fetch');
+  //   return res;
+  // }
+
+  // const a = harry();
+  // a.then((res) => {
+  //   console.log(res);
+  // }).catch((err) => {
+  //   console.log(err);
+  // })
+  // console.log('aaaa');
+  // console.log('bbbbb');
+
   return (
     <Router>
       <div>
