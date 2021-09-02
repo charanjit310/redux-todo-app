@@ -18,21 +18,22 @@ function Home() {
     let isSubscribed = true
     DashboardServices.list({ 'role': 'clinic', 'page': currentPage }).then((res) => {
       if (isSubscribed) {
-        console.log(res.data);
+        // console.log(res.data);
         setUserList(res.data.data.data)
         setpaginationData(res.data.data)
         setLoading(false)
       }
     }).catch((error) => {
-      console.log(error.response);
+      // console.log(error.response);
       // setErrorMsg(error.response.data.message)
     })
 
-    DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
-      console.log(resss);
-    }).catch((error) => {
-      console.log(error.response);
-    });
+    // DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
+    //   // console.log('resss');
+    //   // console.log(resss);
+    // }).catch((error) => {
+    //   // console.log(error.response);
+    // });
 
     return () => isSubscribed = false // cleanup function 
 
@@ -40,7 +41,7 @@ function Home() {
 
   const handleEdit = useCallback( // useCallback memoize function and re-create function when UserList updated
     (id) => {
-      console.log('handleEdit');
+      // console.log('handleEdit');
       setPageRenderCount(pageRenderCount + 1);
     },
     [userList],
@@ -48,11 +49,19 @@ function Home() {
 
   const handleDelete = useCallback(
     (id) => {
-      console.log('handleDelete');
+      // console.log('handleDelete');
+      DashboardServices.deleteItem({ user_id: id }).then((res) => {
+        // console.log(res);
+        // console.log(res.data);
+      }).catch((error) => {
+        // console.log(error.response);
+      })
     },
     [userList],
   )
-
+  // console.log('userList');
+  // console.log(userList);
+  // console.log(!userList.length);
   const renderPagination = ({ current_page, total, per_page }) => {
     return (
       <div className="col-12 mt-4">
@@ -95,7 +104,10 @@ function Home() {
               </thead>
               <tbody>
                 {loading && <tr><td colSpan="5" className="text-center"><span className="spinner-grow text-primary"> </span></td></tr>}
-                <UserLists handleEdit={handleEdit} handleDelete={handleDelete} list={userList} />
+                {userList && <UserLists handleEdit={handleEdit} handleDelete={handleDelete} list={userList} />}
+                {
+                  !userList.length && !loading && <tr><td colSpan="5" className=""><span className="text-primary"> No record found </span></td></tr>
+                }
               </tbody>
             </table>
             {!loading && renderPagination(paginationData)}
