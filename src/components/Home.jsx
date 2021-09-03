@@ -24,16 +24,14 @@ function Home() {
         setLoading(false)
       }
     }).catch((error) => {
-      // console.log(error.response);
       // setErrorMsg(error.response.data.message)
     })
 
-    // DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
-    //   // console.log('resss');
-    //   // console.log(resss);
-    // }).catch((error) => {
-    //   // console.log(error.response);
-    // });
+    DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
+      // console.log(resss);
+    }).catch((error) => {
+      // console.log(error.response);
+    });
 
     return () => isSubscribed = false // cleanup function 
 
@@ -41,7 +39,7 @@ function Home() {
 
   const handleEdit = useCallback( // useCallback memoize function and re-create function when UserList updated
     (id) => {
-      // console.log('handleEdit');
+      console.log('handleEdit');
       setPageRenderCount(pageRenderCount + 1);
     },
     [userList],
@@ -49,10 +47,10 @@ function Home() {
 
   const handleDelete = useCallback(
     (id) => {
-      // console.log('handleDelete');
+      console.log('handleDelete');
       DashboardServices.deleteItem({ user_id: id }).then((res) => {
-        // console.log(res);
-        // console.log(res.data);
+        console.log(res);
+        console.log(res.data);
       }).catch((error) => {
         // console.log(error.response);
       })
