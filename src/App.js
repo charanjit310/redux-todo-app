@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { AuthsService } from "./Services/auth.service";
 import { PrivateRoute, GuestRoute } from "./midleweres";
 import axios from "axios";
+import AddUser from "./components/AddUser";
 
 function App() {
   const isLoggedIn = useSelector((state) => {
@@ -75,6 +76,7 @@ function App() {
           <PrivateRoute exact path="/home" component={Home}></PrivateRoute>
           <PrivateRoute exact path="/about" component={About}></PrivateRoute>
           <PrivateRoute exact path="/contact" component={Contact}></PrivateRoute>
+          <PrivateRoute exact path="/add-user" component={AddUser}></PrivateRoute>
         </Switch>
       </div>
     </Router>

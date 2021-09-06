@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { DashboardServices } from '../Services/dashboard.service';
 import Pagination from 'react-js-pagination';
 import UserLists from './UserItems';
+import { Link, useHistory } from 'react-router-dom';
 
 function Home() {
   const dispatch = useDispatch();
@@ -13,25 +14,31 @@ function Home() {
 
   const [currentPage, setCurrentPage] = useState(1)
   const [paginationData, setpaginationData] = useState([])
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
+    console.log('sssssssss');
     let isSubscribed = true
     DashboardServices.list({ 'role': 'clinic', 'page': currentPage }).then((res) => {
       if (isSubscribed) {
         // console.log(res.data);
         setUserList(res.data.data.data)
         setpaginationData(res.data.data)
+        setTotal(res.data.data.total)
         setLoading(false)
+        console.log(2)
       }
     }).catch((error) => {
       // setErrorMsg(error.response.data.message)
     })
 
-    DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
-      // console.log(resss);
-    }).catch((error) => {
-      // console.log(error.response);
-    });
+    // DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
+    //   // console.log(resss);
+    //   console.log(3)
+
+    // }).catch((error) => {
+    //   // console.log(error.response);
+    // });
 
     return () => isSubscribed = false // cleanup function 
 
@@ -49,18 +56,16 @@ function Home() {
     (id) => {
       console.log('handleDelete');
       DashboardServices.deleteItem({ user_id: id }).then((res) => {
-        console.log(res);
-        console.log(res.data);
+        const result = userList.filter(item => item.id != id);
+        setUserList(result)
+        setTotal(prevTotal => prevTotal - 1)
       }).catch((error) => {
         // console.log(error.response);
       })
     },
     [userList],
   )
-  // console.log('userList');
-  // console.log(userList);
-  // console.log(!userList.length);
-  const renderPagination = ({ current_page, total, per_page }) => {
+  const renderPagination = ({ current_page, per_page }) => {
     return (
       <div className="col-12 mt-4">
         <Pagination
@@ -86,8 +91,14 @@ function Home() {
     <div>
       <div className="container">
         <div className="row">
-          <div className="py-4">
-            <h2>User Listing</h2>
+          <div>
+            <div className="col-md-4 py-4 float-start">
+              <h2>User Listing</h2>
+            </div>
+            <div className="col-md-4 py-4 float-end text-end">
+              <a href="" className=""></a>
+              <Link className="btn btn-primary" to="/add-user">Add User</Link>
+            </div>
           </div>
           <div className="col-md-12" style={{ background: '' }}>
             <table className="" id="customers">
@@ -97,7 +108,7 @@ function Home() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>

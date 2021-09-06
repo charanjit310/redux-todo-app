@@ -157,3 +157,8 @@ Optional chaining (?.)
     A callback function can run after another function has finished
 
     clouser is a space used to create private variable.  
+
+    
+
+what is currnet version of reactjs
+what is redux,react lifcycles, DOM

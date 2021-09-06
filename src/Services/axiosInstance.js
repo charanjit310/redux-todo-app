@@ -2,8 +2,8 @@ import axios from "axios";
 import { Storage } from "./storage.service";
 
 const instance = axios.create({
-  // baseURL: 'http://127.0.0.1:8000/api/',
-  baseURL: 'http://bt-app.zapbuild.in/api/',
+  // baseURL: 'http://bt-app.zapbuild.in/api/',
+  baseURL: 'http://127.0.0.1:8000/api/',
   // headers: { 'Content-Type': 'multipart/form-data' }
 })
 // instance.defaults.headers.common = {
@@ -12,8 +12,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(function (config) {
   const token = Storage.getJSON('_token')
-  // config.headers.Authorization = `Bearer ${token}`;
-  // config.headers.post['Content-Typew'] = 'multipart/form-data';
+  config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 

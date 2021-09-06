@@ -11,7 +11,7 @@ const UserLists = ({ handleEdit, handleDelete, list }) => {
               <td>{list.name}</td>
               <td>{list.email}</td>
               <td>{list.phone}</td>
-              <td>
+              <td className="text-center">
                 <button onClick={() => handleEdit(list.id)} className="btn btn-primary" >Edit</button>
                 <button onClick={() => handleDelete(list.id)} className="btn btn-danger" style={{ marginLeft: 10 }}>Delete</button>
               </td>
