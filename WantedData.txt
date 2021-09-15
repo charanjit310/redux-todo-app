@@ -157,8 +157,26 @@ Optional chaining (?.)
     A callback function can run after another function has finished
 
     clouser is a space used to create private variable.  
+    what is currnet version of reactjs
+    what is redux,react lifcycles, DOM
 
+    Destructuring
+      The destructuring syntax is a JavaScript expression that makes it possible to unpack VALUES from arrays, or PROPERTIES from objects, into distinct variables.
     
+    Array destructuring
+      const [red, yellow] = ['one', 'two'];
+      console.log(red); // "one"
+      console.log(yellow); // "two"
 
-what is currnet version of reactjs
-what is redux,react lifcycles, DOM
+    Object destructuring
+      const user = {id: 42,isVerified: true };
+      const {id, isVerified} = user;
+      console.log(id); // 42
+      console.log(isVerified); // true
+
+      Assigning to new variable names
+        A property can be unpacked from an object and assigned to a variable with a different name than the object property.
+        const o = {p: 42, q: true};
+        const {p: foo, q: bar} = o;
+        console.log(foo); // 42
+        console.log(bar); // true
