@@ -6,20 +6,26 @@ import { formValidations } from './FormsValidations';
 const schema = yup.object().shape(formValidations.userFormValidate);
 
 // Resuable Form Component
-function Forms({ template, submitForm }) {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+function Forms({ template, submitForm, watchFields, validate }) {
+  const { register, handleSubmit, watch, setError, clearErrors, formState: { errors } } = useForm({
+    defaultValues: { name: '', email: '' }, mode: 'all',
     resolver: yupResolver(schema),
   });
 
-  const { title, fields, } = template;
+  // const watchEmailField = watch(); // will watch all fields
+  // const watchEmailField = watch(["name", "email"]); // watch array of fields
+  const watchEmailField = watch('email'); // will watch Email field
+  validate(watchEmailField, { errors, setError, clearErrors })
+
+  const { title, fields } = template;
 
   return (
     <div className="col-md-8 login-form-1 ">
       <h3 className="float-start">{title} </h3>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={handleSubmit(submitForm)} >
         {
           fields.map((field) => {
-            const { title, type, fieldName } = field;
+            const { title, type, name: fieldName } = field; // desturing and renaming the field as well 
 
             switch (type) {
               case "text":
@@ -32,7 +38,7 @@ function Forms({ template, submitForm }) {
               case "email":
                 return (
                   <div className="form-group mb-3" key={fieldName}>
-                    <input type={type} {...register(fieldName)} className="form-control" placeholder={`Your ${fieldName} *`} />
+                    <input type={type} {...register(fieldName)} name="email" className="form-control" placeholder={`Your ${fieldName} *`} />
                     <span className="red">{errors[fieldName] && errors[fieldName].message}</span>
                   </div>
                 )
@@ -46,12 +52,19 @@ function Forms({ template, submitForm }) {
               case "select":
                 return (
                   <div className="form-group mb-3" key={fieldName}>
-                    <select className="form-control" {...register('user_type')} >
+                    <select className="form-control" {...register(fieldName)} >
                       <option value="">Select Profile</option>
                       <option value="Doctor">Doctor</option>
                       <option value="Patient">Patient</option>
                     </select>
-                    <span className="red">{errors.user_type && errors.user_type.message}</span>
+                    <span className="red">{errors[fieldName] && errors[fieldName].message}</span>
+                  </div>
+                )
+              case "file":
+                return (
+                  <div className="form-group mb-3" key={fieldName}>
+                    <input type={type} {...register(fieldName)} className="form-control" />
+                    <span className="red">{errors[fieldName] && errors[fieldName].message}</span>
                   </div>
                 )
               default:
