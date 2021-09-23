@@ -1,10 +1,9 @@
 import axios from "axios";
+import { AuthsService } from "./auth.service";
 import { Storage } from "./storage.service";
 
 const instance = axios.create({
-  // baseURL: 'http://bt-app.zapbuild.in/api/',
-  baseURL: 'http://127.0.0.1:8000/api/',
-  // headers: { 'Content-Type': 'multipart/form-data' }
+  baseURL: AuthsService.baseURL,
 })
 // instance.defaults.headers.common = {
 //   'Authorization': 'Bearer ' + Storage.getJSON('_token')
