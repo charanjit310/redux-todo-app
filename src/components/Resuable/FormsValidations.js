@@ -8,7 +8,8 @@ export const userFormValidate = {
     .oneOf([yup.ref('password'), null], 'Passwords must match')
     .required('Confirm Password is required'),
   user_type: yup.string().required('PLease select'),
-  profile_pic: yup.mixed().required('please select Image')
+
+  // profile_pic: yup.mixed().required('please select Image')
   // .test('fileType', 'Unsupported File Format', function (value) {
   //   const SUPPORTED_FORMATS = ['image/jpg', 'image/jpeg', 'image/png'];
   //   return SUPPORTED_FORMATS.includes(value.type)

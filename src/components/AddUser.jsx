@@ -1,9 +1,49 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useState } from 'react'
+import { useHistory } from 'react-router'
 import { AuthsService } from '../Services/auth.service'
 import Forms from './Resuable/Forms'
 
 function AddUser() {
+  const [loader, setLoader] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(''); // Server side errors
+  const history = useHistory();
+
+  const submitForm = (data) => {
+    setLoader(!loader);
+
+    const formData = new FormData();
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        if (data[key][0] instanceof File) {
+          formData.append(key, data[key][0]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    }
+
+    // for (let [key, value] of formData) { // log FormData 
+    //   console.log(`${key}: ${value}`)
+    // }
+
+    axios.post(`${AuthsService.baseURL}add-user`, formData, AuthsService.formDataConfig)
+      .then((response) => {
+        console.log(response);
+        if (response.data.statusCode == 200) {
+          // dispatch(login(response.data))
+          history.replace('/home')
+        }
+      }).catch((error) => {
+        console.log(error);
+        if (error.response) {
+          setErrorMsg(error.response.data.message)
+        }
+        setLoader(false);
+      });
+
+    return;
+  }
   const template = {
     title: "Add User",
     fields: [
@@ -39,6 +79,10 @@ function AddUser() {
       },
     ]
   }
+  const otherData = {
+    loader,
+    errorMsg,
+  }
   return (
     <div>
       <div className="container">
@@ -52,6 +96,7 @@ function AddUser() {
             watchFields={["name", "email"]}
             validate={validate}
             submitForm={submitForm}
+            otherData={otherData}
           />
         </div>
       </div >
@@ -59,43 +104,8 @@ function AddUser() {
   )
 }
 
-const submitForm = (data) => {
-  const formData = new FormData();
-  for (const key in data) {
-    if (data.hasOwnProperty(key)) {
-      if (data[key][0] instanceof File) {
-        formData.append(key, data[key][0]);
-      } else {
-        formData.append(key, data[key]);
-      }
-    }
-  }
-
-  // for (let [key, value] of formData) { // log FormData 
-  //   console.log(`${key}: ${value}`)
-  // }
-
-  axios.post(`${AuthsService.baseURL}add-user`, formData, AuthsService.formDataConfig)
-    .then((response) => {
-      console.log(response);
-      if (response.data.statusCode == 200) {
-        // dispatch(login(response.data))
-        // history.push('/home')
-      }
-    }).catch((error) => {
-      console.log(error);
-      // if (error.response) {
-      //   setErrorMsg(error.response.data.message)
-      // }
-      // setLoader(false);
-    });
-
-  return;
-}
-
 const validate = (watchEmailField, errorMethods) => {
   const { errors, setError, clearErrors } = errorMethods;
-  // console.log(errors);
   if (watchEmailField === "admin@yopmail.com") {
     if (!errors['email']) {
       setError('email', {

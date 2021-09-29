@@ -19,7 +19,7 @@ function Home() {
   useEffect(() => {
     console.log('sssssssss');
     let isSubscribed = true
-    DashboardServices.list({ 'role': 'clinic', 'page': currentPage }).then((res) => {
+    DashboardServices.list({ 'role': 'Doctor', 'page': currentPage }).then((res) => {
       if (isSubscribed) {
         // console.log(res.data);
         setUserList(res.data.data.data)

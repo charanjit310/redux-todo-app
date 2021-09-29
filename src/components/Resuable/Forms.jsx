@@ -3,10 +3,12 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { formValidations } from './FormsValidations';
+import ErrorMessage from '../ErrorMessage';
 const schema = yup.object().shape(formValidations.userFormValidate);
 
 // Resuable Form Component
-function Forms({ template, submitForm, watchFields, validate }) {
+function Forms({ template, submitForm, watchFields, validate, otherData }) {
+  const { loader, errorMsg } = otherData;
   const { register, handleSubmit, watch, setError, clearErrors, formState: { errors } } = useForm({
     defaultValues: { name: '', email: '' }, mode: 'all',
     resolver: yupResolver(schema),
@@ -21,8 +23,9 @@ function Forms({ template, submitForm, watchFields, validate }) {
 
   return (
     <div className="col-md-8 login-form-1 ">
-      <h3 className="float-start">{title} </h3>
       <form onSubmit={handleSubmit(submitForm)} >
+        {(errorMsg != '') ? <ErrorMessage errorMsg={errorMsg} /> : ''}
+        <h3 className="float-start">{title} </h3>
         {
           fields.map((field) => {
             const { title, type, name: fieldName } = field; // desturing and renaming the field as well 
@@ -77,7 +80,10 @@ function Forms({ template, submitForm, watchFields, validate }) {
           })
         }
 
-        <button className="btn btn-primary btnSubmit float-end" >Add</button>
+        <button className="btn btn-primary btnSubmit float-end" disabled={loader}>
+          {!loader || <span className="spinner-border spinner-border-sm " style={{ marginRight: '11px' }}> </span>}
+          Submit
+        </button>
         {/* {console.log(errors)} */}
 
 
