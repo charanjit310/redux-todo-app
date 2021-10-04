@@ -82,6 +82,7 @@ function AddUser() {
   const otherData = {
     loader,
     errorMsg,
+    formType: 'create'
   }
   return (
     <div>
@@ -99,7 +100,7 @@ function AddUser() {
             otherData={otherData}
           />
         </div>
-      </div >
+      </div>
     </div >
   )
 }

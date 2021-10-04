@@ -8,6 +8,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 function Home() {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [pageRenderCount, setPageRenderCount] = useState(1)
   const [userList, setUserList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -26,7 +27,6 @@ function Home() {
         setpaginationData(res.data.data)
         setTotal(res.data.data.total)
         setLoading(false)
-        console.log(2)
       }
     }).catch((error) => {
       // setErrorMsg(error.response.data.message)
@@ -35,7 +35,6 @@ function Home() {
     // DashboardServices.asyncList({ 'role': 'clinic', 'page': currentPage }).then((resss) => {
     //   // console.log(resss);
     //   console.log(3)
-
     // }).catch((error) => {
     //   // console.log(error.response);
     // });
@@ -46,7 +45,7 @@ function Home() {
 
   const handleEdit = useCallback( // useCallback memoize function and re-create function when UserList updated
     (id) => {
-      console.log('handleEdit');
+      history.replace(`/edit-user/${id}`)
       setPageRenderCount(pageRenderCount + 1);
     },
     [userList],

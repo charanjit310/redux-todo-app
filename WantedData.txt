@@ -181,6 +181,8 @@ Optional chaining (?.)
         console.log(foo); // 42
         console.log(bar); // true
 
+
+Object.keys(userData).length === 0 // checking if object is empty
 ----------------------------------------- objectToFormData ----------------------------
 var formData = new FormData();
 function objectToFormData(obj, rootName) {

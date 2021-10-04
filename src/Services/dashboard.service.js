@@ -4,19 +4,6 @@ const list = (params = {}) => {
   return axios.get(`/users-listing?role=${params.role}&&page=${params.page}`)
 }
 
-// const formData = new FormData();
-// formData.append("registration_number", "222");
-// formData.append("registration_authority", "3333");
-// formData.append("year", "2021");
-
-// // convert the key/value pairs
-// let data = {};
-// for (var pair of formData.entries()) {
-//   data[pair[0]] = pair[1];
-// }
-// console.log(data);
-
-
 const asyncList = async (params = {}) => {
   console.log('sssssssssssssssssssssssss');
   // return await axios.post(`/save-professional-info`, {
@@ -41,8 +28,13 @@ const deleteItem = async (data) => {
   )
 }
 
+const getUserById = async (id) => {
+  return await axios.get(`/profile-details/${id}`)
+}
+
 export const DashboardServices = {
   list,
   asyncList,
   deleteItem,
+  getUserById,
 }

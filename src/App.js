@@ -16,12 +16,14 @@ import { AuthsService } from "./Services/auth.service";
 import { PrivateRoute, GuestRoute } from "./midleweres";
 import axios from "axios";
 import AddUser from "./components/AddUser";
+import EditUser from "./components/EditUser";
 
 function App() {
   const isLoggedIn = useSelector((state) => {
     return state.registerReducer.loggedIn
   })
   // console.log(isLoggedIn);
+
   // let p = new Promise((res, rej) => {
   //   let i = 3
   //   if (i == 2) {
@@ -36,6 +38,7 @@ function App() {
   // })
 
   // async function harry() { // async functions always returns Promise
+
   //   console.log('before fetch');
   //   // let res = await fetch('https://api.github.com/users')
   //   // res = await res.json(); // await res.json() is a method on the Response object that lets you extract a JSON object from the response. The method returns a promise, so you have to wait for the JSON: await response.json().
@@ -45,7 +48,7 @@ function App() {
   //   // console.log('after second fetch');
   //   // return res;
 
-  //   // using axios 
+  //   -------------------------- using axios ---------------------------
   //   // let res = await axios.get('https://api.github.com/users')
   //   // console.log('after first fetch');
   //   // console.log(res.data);
@@ -62,8 +65,6 @@ function App() {
   // }).catch((err) => {
   //   console.log(err);
   // })
-  // console.log('aaaa');
-  // console.log('bbbbb');
 
   return (
     <Router>
@@ -77,6 +78,7 @@ function App() {
           <PrivateRoute exact path="/about" component={About}></PrivateRoute>
           <PrivateRoute exact path="/contact" component={Contact}></PrivateRoute>
           <PrivateRoute exact path="/add-user" component={AddUser}></PrivateRoute>
+          <PrivateRoute exact path="/edit-user/:id" component={EditUser}></PrivateRoute>
         </Switch>
       </div>
     </Router>

@@ -8,9 +8,16 @@ const schema = yup.object().shape(formValidations.userFormValidate);
 
 // Resuable Form Component
 function Forms({ template, submitForm, watchFields, validate, otherData }) {
-  const { loader, errorMsg } = otherData;
+  const { loader, errorMsg, formType, userData } = otherData;
+  console.log('form userData');
+  console.log(userData);
+  let preLoadedValues = { name: 'ssssssssss', email: 'sss' }
+  if (userData) {
+    preLoadedValues = { name: `${userData?.name}`, email: `${userData?.email}` }
+  }
   const { register, handleSubmit, watch, setError, clearErrors, formState: { errors } } = useForm({
-    defaultValues: { name: '', email: '' }, mode: 'all',
+    defaultValues: preLoadedValues,
+    mode: 'all',
     resolver: yupResolver(schema),
   });
 
@@ -28,7 +35,7 @@ function Forms({ template, submitForm, watchFields, validate, otherData }) {
         <h3 className="float-start">{title} </h3>
         {
           fields.map((field) => {
-            const { title, type, name: fieldName } = field; // desturing and renaming the field as well 
+            const { title, type, name: fieldName } = field; // destructuring and renaming the field as well 
 
             switch (type) {
               case "text":
