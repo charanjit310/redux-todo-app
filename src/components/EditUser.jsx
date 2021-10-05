@@ -6,10 +6,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useHistory } from 'react-router';
 import { AuthsService } from '../Services/auth.service';
 import { DashboardServices } from '../Services/dashboard.service';
+import { objToFormdata } from '../Services/formData.service';
 import ErrorMessage from './ErrorMessage';
 import Forms from './Resuable/Forms';
 import { formValidations } from './Resuable/FormsValidations';
-
 
 function EditUser({ match }) {
   const { id } = match.params; // get parameters
@@ -22,7 +22,6 @@ function EditUser({ match }) {
   const { getUserById } = DashboardServices;
 
   useEffect(() => {
-    // console.log(`id ${id}`);
     getUserById(id).then((response) => {
       console.log(response);
       if (!response.data.data.length) {
@@ -35,15 +34,27 @@ function EditUser({ match }) {
       // setLoader(false);
     });
   }, [])
-  // console.log('userData');
-  // console.log(userData);
 
   const submitForm = (data) => {
-    console.log('edit-submitForm');
-    console.log('edit-submitForm');
-    console.log('edit-submitForm');
-    console.log(data);
-    // history.replace('/home')
+    setLoader(true)
+    data = { ...data, user_id: id }
+
+    const formData = objToFormdata.fnObjToFormdata(data);
+    // for (let [key, value] of formData) { // log FormData 
+    //   console.log(`${key}: ${value}`)
+    // }
+
+    axios.post(`${AuthsService.baseURL}profile-update`, formData, AuthsService.formDataConfig)
+      .then((response) => {
+        console.log(response);
+        if (response.data.statusCode == 200) {
+          history.replace('/home')
+        }
+      }).catch((error) => {
+        console.log(error);
+        setErrorMsg(error.response.data.message)
+        setLoader(false);
+      });
     return false;
   }
 

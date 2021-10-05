@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router'
 import { AuthsService } from '../Services/auth.service'
+import { objToFormdata } from '../Services/formData.service'
 import Forms from './Resuable/Forms'
 import { formValidations } from './Resuable/FormsValidations';
 
@@ -13,17 +14,7 @@ function AddUser() {
   const submitForm = (data) => {
     setLoader(!loader);
 
-    const formData = new FormData();
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        if (data[key][0] instanceof File) {
-          formData.append(key, data[key][0]);
-        } else {
-          formData.append(key, data[key]);
-        }
-      }
-    }
-
+    const formData = objToFormdata.fnObjToFormdata(data);
     // for (let [key, value] of formData) { // log FormData 
     //   console.log(`${key}: ${value}`)
     // }
@@ -32,14 +23,11 @@ function AddUser() {
       .then((response) => {
         console.log(response);
         if (response.data.statusCode == 200) {
-          // dispatch(login(response.data))
           history.replace('/home')
         }
       }).catch((error) => {
         console.log(error);
-        if (error.response) {
-          setErrorMsg(error.response.data.message)
-        }
+        setErrorMsg(error.response.data.message)
         setLoader(false);
       });
 
@@ -123,38 +111,5 @@ const validate = (watchEmailField, errorMethods) => {
     }
   }
 }
-
-// var formData = new FormData();
-// function objectToFormData(obj, rootName) {
-//   function appendFormData(data, root) {
-//     root = root || '';
-//     if (data instanceof File) {
-//       formData.append(root, data);
-//     } else if (Array.isArray(data)) {
-//       for (var i = 0; i < data.length; i++) {
-//         appendFormData(data[i], root + '[' + i + ']');
-//       }
-//     } else if (typeof data === 'object' && data) {
-//       for (var key in data) {
-//         if (data.hasOwnProperty(key)) {
-//           if (root === '') {
-//             appendFormData(data[key], key);
-//           } else {
-//             appendFormData(data[key], root + '[' + key + ']');
-//           }
-//         }
-//       }
-//     } else {
-//       if (data !== null && typeof data !== 'undefined') {
-//         formData.append(root, data);
-//       }
-//     }
-//   }
-//   appendFormData(obj, rootName);
-
-//   return formData;
-// }
-
-// const registration = objectToFormData(payload.registration, 'registration');
 
 export default AddUser
