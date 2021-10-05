@@ -71,6 +71,7 @@ function App() {
       <div>
         {isLoggedIn && <Navbar />}
         <Switch>
+          <GuestRoute exact path="/" component={Login}></GuestRoute>
           <GuestRoute exact path="/login" component={Login}></GuestRoute>
           <GuestRoute exact path="/register" component={Register}></GuestRoute>
           <GuestRoute exact path="/verifyOTP" component={VerifyOTP}></GuestRoute>

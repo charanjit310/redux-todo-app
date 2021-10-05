@@ -2,20 +2,20 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import { formValidations } from './FormsValidations';
 import ErrorMessage from '../ErrorMessage';
-const schema = yup.object().shape(formValidations.userFormValidate);
 
 // Resuable Form Component
-function Forms({ template, submitForm, watchFields, validate, otherData }) {
+function Forms({ template, submitForm, watchFields, validate, otherData, formValidations }) {
+  const schema = yup.object().shape(formValidations);
   const { loader, errorMsg, formType, userData } = otherData;
   console.log('form userData');
   console.log(userData);
-  let preLoadedValues = { name: 'ssssssssss', email: 'sss' }
+  let preLoadedValues = { name: '', email: '' }
   if (userData) {
+    // preLoadedValues = { name: `${userData?.name}`, email: `${userData?.email}`, user_type: `${userData?.value}` }
     preLoadedValues = { name: `${userData?.name}`, email: `${userData?.email}` }
   }
-  const { register, handleSubmit, watch, setError, clearErrors, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, watch, setError, clearErrors, formState: { errors } } = useForm({
     defaultValues: preLoadedValues,
     mode: 'all',
     resolver: yupResolver(schema),
@@ -35,7 +35,7 @@ function Forms({ template, submitForm, watchFields, validate, otherData }) {
         <h3 className="float-start">{title} </h3>
         {
           fields.map((field) => {
-            const { title, type, name: fieldName } = field; // destructuring and renaming the field as well 
+            const { title, type, name: fieldName, values, selectedValue } = field; // destructuring and renaming the fields as well 
 
             switch (type) {
               case "text":
@@ -60,12 +60,16 @@ function Forms({ template, submitForm, watchFields, validate, otherData }) {
                   </div>
                 )
               case "select":
+                selectedValue && setValue(fieldName, selectedValue, { shouldValidate: false })
                 return (
                   <div className="form-group mb-3" key={fieldName}>
-                    <select className="form-control" {...register(fieldName)} >
+                    <select className="form-control" {...register(fieldName)}>
                       <option value="">Select Profile</option>
-                      <option value="Doctor">Doctor</option>
-                      <option value="Patient">Patient</option>
+                      {
+                        values.map((value) => {
+                          return <option key={value} value={value}>{value}</option>
+                        })
+                      }
                     </select>
                     <span className="red">{errors[fieldName] && errors[fieldName].message}</span>
                   </div>
@@ -75,6 +79,12 @@ function Forms({ template, submitForm, watchFields, validate, otherData }) {
                   <div className="form-group mb-3" key={fieldName}>
                     <input type={type} {...register(fieldName)} className="form-control" />
                     <span className="red">{errors[fieldName] && errors[fieldName].message}</span>
+                  </div>
+                )
+              case "image":
+                return (
+                  <div className="form-group mb-3" key={fieldName}>
+                    <img className="profile_pic" src={userData?.file_url} alt="BigCo Inc. logo" />
                   </div>
                 )
               default:

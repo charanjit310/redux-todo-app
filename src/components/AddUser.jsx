@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router'
 import { AuthsService } from '../Services/auth.service'
 import Forms from './Resuable/Forms'
+import { formValidations } from './Resuable/FormsValidations';
 
 function AddUser() {
   const [loader, setLoader] = useState(false);
@@ -70,7 +71,8 @@ function AddUser() {
       {
         title: 'user_type',
         type: "select",
-        name: "user_type"
+        name: "user_type",
+        values: ["Doctor", "Patient"],
       },
       {
         title: 'profile_pic',
@@ -98,6 +100,7 @@ function AddUser() {
             validate={validate}
             submitForm={submitForm}
             otherData={otherData}
+            formValidations={formValidations.userFormValidate}
           />
         </div>
       </div>

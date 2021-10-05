@@ -8,6 +8,7 @@ import { AuthsService } from '../Services/auth.service';
 import { DashboardServices } from '../Services/dashboard.service';
 import ErrorMessage from './ErrorMessage';
 import Forms from './Resuable/Forms';
+import { formValidations } from './Resuable/FormsValidations';
 
 
 function EditUser({ match }) {
@@ -39,7 +40,11 @@ function EditUser({ match }) {
 
   const submitForm = (data) => {
     console.log('edit-submitForm');
-    return;
+    console.log('edit-submitForm');
+    console.log('edit-submitForm');
+    console.log(data);
+    // history.replace('/home')
+    return false;
   }
 
 
@@ -60,6 +65,8 @@ function EditUser({ match }) {
         title: 'user_type',
         type: "select",
         name: "user_type",
+        values: ["Doctor", "Patient"],
+        selectedValue: "Doctor"
       },
       {
         title: 'image',
@@ -92,6 +99,7 @@ function EditUser({ match }) {
           validate={validate}
           submitForm={submitForm}
           otherData={otherData}
+          formValidations={formValidations.editUserFormValidate}
         />
       </div>
     </div>
@@ -100,6 +108,7 @@ function EditUser({ match }) {
       {(errorMsg != '') ? <ErrorMessage errorMsg={errorMsg} /> : <h2>Loading..</h2>}
     </div>
   )
+
   return view
 }
 
