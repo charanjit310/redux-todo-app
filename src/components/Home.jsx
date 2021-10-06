@@ -83,6 +83,18 @@ function Home() {
     )
   }
 
+  const handleSearch = (e) => {
+    const val = e.target.value.trim();
+    if (!!userList.length && !!val.length) {
+      console.log(userList);
+      let userListNew = userList.filter((list) => {
+        if (list.name.includes(val)) { // includes() method determines whether a string contains the given characters within it or not.
+          return list
+        }
+      })
+      setUserList(userListNew)
+    }
+  }
   // https://academind.com/tutorials/reactjs-pagination/
   // https://hemanta.io/implement-pagination-search-and-filter-in-a-react-app-part-3/
   // https://stackoverflow.com/questions/40232847/how-to-implement-pagination-in-react
@@ -100,6 +112,10 @@ function Home() {
             </div>
           </div>
           <div className="col-md-12" style={{ background: '' }}>
+            <div className="form-group mb-3 col-md-3 float-end">
+              <input type="search" onChange={(e) => handleSearch(e)} className="form-control" placeholder="Search.." />
+            </div>
+
             <table className="" id="customers">
               <thead className="">
                 <tr>
