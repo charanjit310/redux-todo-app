@@ -109,6 +109,9 @@ function Home() {
             <div className="col-md-4 py-4 float-end text-end">
               <a href="" className=""></a>
               <Link className="btn btn-primary" to="/add-user">Add User</Link>
+              <br />
+              <br />
+              <Link className="btn btn-primary" to="/manage-profile">Manage  Profile</Link>
             </div>
           </div>
           <div className="col-md-12" style={{ background: '' }}>

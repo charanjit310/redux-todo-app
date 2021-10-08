@@ -17,6 +17,7 @@ import { PrivateRoute, GuestRoute } from "./midleweres";
 import axios from "axios";
 import AddUser from "./components/AddUser";
 import EditUser from "./components/EditUser";
+import ManageProfile from "./components/ManageProfile";
 
 function App() {
   const isLoggedIn = useSelector((state) => {
@@ -79,6 +80,7 @@ function App() {
           <PrivateRoute exact path="/about" component={About}></PrivateRoute>
           <PrivateRoute exact path="/contact" component={Contact}></PrivateRoute>
           <PrivateRoute exact path="/add-user" component={AddUser}></PrivateRoute>
+          <PrivateRoute exact path="/manage-profile" component={ManageProfile}></PrivateRoute>
           <PrivateRoute exact path="/edit-user/:id" component={EditUser}></PrivateRoute>
         </Switch>
       </div>
