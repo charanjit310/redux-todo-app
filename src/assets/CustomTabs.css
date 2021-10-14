@@ -14,7 +14,7 @@
 
 .tab {
   width: 100%;
-  padding: 25px;
+  padding: 2px;
   font-family: sans-serif;
   color: #444;
 }
@@ -40,11 +40,17 @@ li {
   font-family: Lato, sans-serif;
   font-weight: 300;
   cursor: pointer;
-  color: #aaa;
+  /* color: #aaa; */
+  color: rgb(12, 2, 2);
 }
 
 ul.inline,
 li.selected {
   border-bottom: 2px solid #337ab7;
-  color: #444;
+  /* color: #444; */
+  background-color: rgb(240, 240, 240);
+  color: rgb(20, 132, 236);
+}
+li:hover {
+  background-color: rgb(240, 240, 240);
 }

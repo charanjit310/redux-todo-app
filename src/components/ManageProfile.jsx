@@ -8,6 +8,7 @@ import Forms from './Resuable/Forms'
 import { formValidations } from './Resuable/FormsValidations';
 import CustomPanel from './Resuable/Panel'
 import CustomTabs from './Resuable/Tabs'
+import ManageProfileForm from './Resuable/Profile/ManageProfileForm';
 
 
 function ManageProfile() {
@@ -16,28 +17,30 @@ function ManageProfile() {
       <div className="container">
         <div className="row">
           <div className="col-md-4 py-4 float-start">
-            Manage Profile
+
           </div>
 
           {/* https://github.com/abhishek305/reactjs-tabs */}
           {/* https://www.youtube.com/watch?v=WkREeDy2WQ4 */}
           <div className="main-container">
             <CustomTabs>
-              <CustomPanel title="All Names">
-                sadasdasdasdasd
+              <CustomPanel title="Personal Info">
+                <ManageProfileForm />
               </CustomPanel>
-              <CustomPanel title="In Review Candidates">
-                sdsdasdxxxxxxxxxxxxxxxxxxxxx
+              <CustomPanel title="Professional Info">
+                sdsdasdxx Professional Info
               </CustomPanel>
-              <CustomPanel title="Registered Names">
-                dsdsssssssssssssssssssssssssssssssssssssssssssssss
+              <CustomPanel title="Treatment Info">
+                dsdsssss Treatment Info
               </CustomPanel>
-              <CustomPanel title="Registered Namesccc">
-                SDSDSDSD
+              <CustomPanel title="Business Info ">
+                SDSDSDSD Business Info
+              </CustomPanel>
+              <CustomPanel title="Visible Profile ">
+                SDSDSDSD Visible Profile
               </CustomPanel>
             </CustomTabs>
           </div>
-
         </div>
       </div>
     </div >
