@@ -1,6 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { countryStates } from '../CountryStates'
 
 function ManageProfileForm() {
+  const initialState = [];
+  const [states, setState] = useState(initialState)
+  const countryHandler = (event) => {
+    console.log(event.target.value);
+    if (event.target.value == '') {
+      setState(initialState);
+    } else {
+      const result = countryStates.filter(country => country.country == event.target.value);
+      setState(result[0].states);
+    }
+  }
+
+  console.log('countryStates');
+
   return (
     <>
       <div className="container forms-container">
@@ -74,14 +89,24 @@ function ManageProfileForm() {
                 <div className="row">
                   <div className="col">
                     <label htmlFor="">country</label>
-                    <select name="country" id="" className="form-control">
-                      <option value="country one"> country one</option>
+                    <select name="country" id="" className="form-control" onChange={(event) => countryHandler(event)}>
+                      <option value=""> --Select--</option>
+                      {
+                        countryStates.map((country, indx) => {
+                          return (
+                            <option key={indx} value={country.country} > {country.country}</option>
+                          )
+                        })
+                      }
                     </select>
                   </div>
                   <div className="col">
                     <label htmlFor="">State</label>
                     <select name="State" id="" className="form-control">
-                      <option value="State one">State one</option>
+                      <option value=""> --Select-- </option>
+                      {
+                        states.map((state, indx) => <option key={indx} value={state} > {state}</option>)
+                      }
                     </select>
                   </div>
                   <div className="col">
