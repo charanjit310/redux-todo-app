@@ -187,10 +187,25 @@ Optional chaining (?.)
     const disneyCharacter = {
       [key]: value,
     }
-    console.log(disneyCharacter) // {Mickey Mouse: 'Happy'}
+    console.log(disneyCharacter) // {Mickey Mouse: 'Happy'}    
     -------------------------------------------------------
 
-Object.keys(userData).length === 0 // checking if object is empty
+// checking if object is empty
+Object.keys(userData).length === 0 
+
+// loop through object :--> convert object to array then loop through using any array methode
+  Object.keys(provinces).map((key, index) => {
+    console.log(`-----------------`);
+    console.log(`${key}: ${provinces[key]}`);
+  });
+
+  let statesDropdown = [];
+  if (provinces.hasOwnProperty(index)) {
+    statesDropdown = Object.values(provinces[index]);
+    statesDropdown.map((keyy, indx) => {
+      console.log(keyy);
+    })
+  }
 ----------------------------------------- objectToFormData ----------------------------
 var formData = new FormData();
 function objectToFormData(obj, rootName) {

@@ -26,17 +26,19 @@ const schema = yup.object().shape({
 // https://codesandbox.io/s/react-hook-form-usefieldarray-yikiz?file=/src/index.js:1146-1168
 // https://codesandbox.io/s/react-hook-form-usefieldarray-nested-arrays-m8w6j?file=/src/fieldArray.js:127-138
 function ManageProfileForm() {
-  const initialState = [];
-  const [states, setState] = useState(initialState)
+  const initialProvince = {};
+  const [provinces, setProvince] = useState(initialProvince)
 
-  const countryHandler = (event) => {
+  const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
     if (event.target.value == '') {
-      setState(initialState);
+      setProvince(initialProvince)
     } else {
       const result = countryStates.filter(country => country.country == event.target.value);
-      setState(result[0].states);
+      const allProvinces = result[0].states;
+      setProvince({ ...provinces, [countryIndex]: allProvinces })
     }
   }
+  console.log(provinces);
 
   const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -54,7 +56,7 @@ function ManageProfileForm() {
   const initOfficeAddr = {
     address_line: "",
     country: "",
-    state: "",
+    province: "",
     city: "",
     postcode: "",
   };
@@ -135,6 +137,11 @@ function ManageProfileForm() {
                 <div className="address_div">
                   {
                     fields.map((item, index) => {
+                      let statesDropdown = [];
+                      if (provinces.hasOwnProperty(index)) {
+                        statesDropdown = Object.values(provinces[index]);
+                      }
+
                       return (
                         <div className="" key={item.id}>
                           <div className="row">
@@ -147,7 +154,7 @@ function ManageProfileForm() {
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">country</label>
-                              <select name="country" id="" {...register(`userOfficeAddress[${index}].country`)} keydddd="2222222" className="form-control" onChange={(event) => countryHandler(event)}>
+                              <select name="country" id="" {...register(`userOfficeAddress[${index}].country`)} className="form-control" onChange={(event) => countryHandler(event, index)}>
                                 <option value=""> --Select--</option>
                                 {
                                   countryStates.map((country, indx) => {
@@ -159,11 +166,15 @@ function ManageProfileForm() {
                               </select>
                             </div>
                             <div className="col">
-                              <label htmlFor="">State</label>
-                              <select name="State" id="" {...register(`userOfficeAddress[${index}].state`)} className="form-control">
+                              <label htmlFor="">Province</label>
+                              <select name="State" id="" {...register(`userOfficeAddress[${index}].province`)} className="form-control">
                                 <option value=""> --Select-- </option>
                                 {
-                                  states.map((state, indx) => <option key={indx} value={state} > {state}</option>)
+                                  statesDropdown.map((state, indx) => {
+                                    return (
+                                      <option key={indx} value={state} > {state}</option>
+                                    )
+                                  })
                                 }
                               </select>
                             </div>
