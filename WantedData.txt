@@ -181,6 +181,14 @@ Optional chaining (?.)
         console.log(foo); // 42
         console.log(bar); // true
 
+    -------------------------------------------------------
+    const key = 'Mickey Mouse'
+    const value = 'Happy'
+    const disneyCharacter = {
+      [key]: value,
+    }
+    console.log(disneyCharacter) // {Mickey Mouse: 'Happy'}
+    -------------------------------------------------------
 
 Object.keys(userData).length === 0 // checking if object is empty
 ----------------------------------------- objectToFormData ----------------------------
