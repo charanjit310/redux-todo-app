@@ -206,6 +206,14 @@ Object.keys(userData).length === 0
       console.log(keyy);
     })
   }
+
+  When we have to pass some parameters in function (that will be called on click or on some other events) 
+  always write that functions in lambda function see ex below:-
+    onClick={handleIconClick('increment')} // Wrong way
+    onClick={() => handleIconClick('increment')} // Right way
+
+  model,
+  react portle
 ----------------------------------------- objectToFormData ----------------------------
 var formData = new FormData();
 function objectToFormData(obj, rootName) {

@@ -28,6 +28,7 @@ const schema = yup.object().shape({
 function ManageProfileForm() {
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
+  let [iconCount, setIconCount] = useState(0) // plus minus icon count of office addresses
 
   const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
     if (event.target.value == '') {
@@ -38,7 +39,8 @@ function ManageProfileForm() {
       setProvince({ ...provinces, [countryIndex]: allProvinces })
     }
   }
-  console.log(provinces);
+
+  console.log(iconCount);
 
   const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -65,6 +67,25 @@ function ManageProfileForm() {
       userOfficeAddress: [initOfficeAddr]
     });
   }, []);
+
+  const handleIconClick = (action) => {
+    if (action === 'increment') {
+      append(initOfficeAddr);
+      setIconCount((prevIconCount) => prevIconCount + 1);
+    } else {
+      console.log('decreement decreement ccccc');
+    }
+  }
+
+  let iconComp = (iconCount > 0) ? (
+    <svg onClick={() => handleIconClick('decreement')} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
+    </svg>
+  ) : (
+    <svg onClick={() => handleIconClick('increment')} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+    </svg>
+  )
 
   return (
     <>
@@ -144,6 +165,10 @@ function ManageProfileForm() {
 
                       return (
                         <div className="" key={item.id}>
+                          <div className="col-md-6 float-end text-end ">
+                            <h3>{iconComp}</h3>
+                          </div>
+
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">Address Line</label> <span className="red">*</span>
