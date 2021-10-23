@@ -25,6 +25,9 @@ const schema = yup.object().shape({
 // useFieldArray sandbox cod examples
 // https://codesandbox.io/s/react-hook-form-usefieldarray-yikiz?file=/src/index.js:1146-1168
 // https://codesandbox.io/s/react-hook-form-usefieldarray-nested-arrays-m8w6j?file=/src/fieldArray.js:127-138
+// https://codesandbox.io/s/vy8fv?file=/src/index.js:771-782
+// https://www.youtube.com/watch?v=3GtAE9RZHVc
+// https://www.youtube.com/watch?v=7fupPfocNy4
 function ManageProfileForm() {
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
@@ -39,8 +42,6 @@ function ManageProfileForm() {
       setProvince({ ...provinces, [countryIndex]: allProvinces })
     }
   }
-
-  console.log(iconCount);
 
   const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -68,24 +69,25 @@ function ManageProfileForm() {
     });
   }, []);
 
-  const handleIconClick = (action) => {
+  const handleIconClick = (action, index) => {
     if (action === 'increment') {
       append(initOfficeAddr);
-      setIconCount((prevIconCount) => prevIconCount + 1);
     } else {
       console.log('decreement decreement ccccc');
+      delete provinces[index]
+
+      let newProvinces = {};
+      let i = 0;
+      for (const key in provinces) {
+        newProvinces[i] = provinces[key]
+        i++;
+      }
+      setProvince(newProvinces)
+
+      remove(index)
+      setIconCount((prevIconCount) => prevIconCount - 1);
     }
   }
-
-  let iconComp = (iconCount > 0) ? (
-    <svg onClick={() => handleIconClick('decreement')} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
-      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
-    </svg>
-  ) : (
-    <svg onClick={() => handleIconClick('increment')} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-    </svg>
-  )
 
   return (
     <>
@@ -149,6 +151,8 @@ function ManageProfileForm() {
                     <h3>
                       <svg onClick={() => {
                         append(initOfficeAddr);
+                        // setIconCount(iconCount + 1);
+                        setIconCount((prevIconCount) => prevIconCount + 1);
                       }} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
                       </svg>
@@ -163,10 +167,16 @@ function ManageProfileForm() {
                         statesDropdown = Object.values(provinces[index]);
                       }
 
+                      let iconComp = (
+                        <svg onClick={() => handleIconClick('decreement', index)} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
+                        </svg>
+                      )
+
                       return (
                         <div className="" key={item.id}>
                           <div className="col-md-6 float-end text-end ">
-                            <h3>{iconComp}</h3>
+                            <h3>{iconCount ? iconComp : ''}</h3>
                           </div>
 
                           <div className="row">

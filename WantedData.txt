@@ -212,6 +212,17 @@ Object.keys(userData).length === 0
     onClick={handleIconClick('increment')} // Wrong way
     onClick={() => handleIconClick('increment')} // Right way
 
+  Delete/Remove properties from objects:-
+    delete provinces[index]
+
+  create new object from existing object and resetting the index
+    let newProvinces = {};
+    let i = 0;
+    for (const key in provinces) {
+      newProvinces[i] = provinces[key]
+      i++;
+    } 
+
   model,
   react portle
 ----------------------------------------- objectToFormData ----------------------------
