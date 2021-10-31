@@ -31,19 +31,11 @@ const schema = yup.object().shape({
 function ManageProfileForm() {
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
+  const initialCorespondnceAddr = {};
+  let [corespondnceAddr, setCorespondnceAddr] = useState(initialCorespondnceAddr)
   let [iconCount, setIconCount] = useState(0) // plus minus icon count of office addresses
 
-  const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
-    if (event.target.value == '') {
-      setProvince(initialProvince)
-    } else {
-      const result = countryStates.filter(country => country.country == event.target.value);
-      const allProvinces = result[0].states;
-      setProvince({ ...provinces, [countryIndex]: allProvinces })
-    }
-  }
-
-  const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
+  const { register, setValue, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -62,6 +54,7 @@ function ManageProfileForm() {
     province: "",
     city: "",
     postcode: "",
+    correspondence_address: false,
   };
   React.useEffect(() => {
     reset({
@@ -88,6 +81,30 @@ function ManageProfileForm() {
       setIconCount((prevIconCount) => prevIconCount - 1);
     }
   }
+
+  const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
+    if (event.target.value == '') {
+      setProvince(initialProvince)
+    } else {
+      const result = countryStates.filter(country => country.country == event.target.value);
+      const allProvinces = result[0].states;
+      setProvince({ ...provinces, [countryIndex]: allProvinces })
+    }
+  }
+
+  const handleCorrespondenceAddr = (event, index) => {
+    const checked = event.target.checked;
+    if (!checked) {
+      return setCorespondnceAddr(initialCorespondnceAddr);
+    }
+
+    setCorespondnceAddr({ [index]: 1 })
+  }
+
+
+  /////////////// work on Checkbox issue ///////////////////////////////////////////////
+  // clone  multiple office address and then select one of the chcek box then start removing some itmes then see the selected checkbox is gone
+  ////////////// work on dynamic fields validations ////////////////////////////////////
 
   return (
     <>
@@ -167,6 +184,14 @@ function ManageProfileForm() {
                         statesDropdown = Object.values(provinces[index]);
                       }
 
+                      // correspondence_address checkboxes handling...
+                      let isChecked = false
+                      setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
+                      if (corespondnceAddr.hasOwnProperty(index)) {
+                        isChecked = true
+                        setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
+                      }
+
                       let iconComp = (
                         <svg onClick={() => handleIconClick('decreement', index)} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
                           <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
@@ -227,8 +252,8 @@ function ManageProfileForm() {
                           <div className="row">
                             <div className="col">
                               <div className="form-check">
-                                <label className="form-check-label" htmlFor="exampleCheck1">Correspondence Address same as office address</label>
-                                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                                <label className="form-check-label" htmlFor="">Correspondence Address same as office address</label>
+                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`userOfficeAddress[${index}].correspondence_address`)} onChange={(event) => handleCorrespondenceAddr(event, index)} />
                               </div>
                             </div>
                           </div>
