@@ -31,9 +31,13 @@ const schema = yup.object().shape({
 function ManageProfileForm() {
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
-  const initialCorespondnceAddr = {};
-  let [corespondnceAddr, setCorespondnceAddr] = useState(initialCorespondnceAddr)
-  let [iconCount, setIconCount] = useState(0) // plus minus icon count of office addresses
+
+  // it holds index of CorespondnceAddr div  whose checkbox is checked
+  const initialCorespondnceAddrChkbox = {};
+  const [corespondnceAddrChkbox, setCorespondnceAddrChkbox] = useState(initialCorespondnceAddrChkbox)
+
+  // count of 'plus minus icon' of office addresses
+  const [iconCount, setIconCount] = useState(0)
 
   const { register, setValue, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
@@ -66,7 +70,7 @@ function ManageProfileForm() {
     if (action === 'increment') {
       append(initOfficeAddr);
     } else {
-      console.log('decreement decreement ccccc');
+      // delete state array
       delete provinces[index]
 
       let newProvinces = {};
@@ -77,7 +81,20 @@ function ManageProfileForm() {
       }
       setProvince(newProvinces)
 
+      // remove index form 'fields' array
       remove(index)
+
+      // when click on 'minus icon', remove index form 'corespondnceAddrChkbox' array if it exists
+      if (Object.keys(corespondnceAddrChkbox).length !== 0) { // if obj is not empty
+        const chkBoxIndex = Object.values(corespondnceAddrChkbox);
+        if (index < chkBoxIndex) {
+          setCorespondnceAddrChkbox({ [index]: chkBoxIndex - 1 })
+        }
+        if (index == chkBoxIndex) {
+          setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox)
+        }
+      }
+
       setIconCount((prevIconCount) => prevIconCount - 1);
     }
   }
@@ -92,13 +109,13 @@ function ManageProfileForm() {
     }
   }
 
-  const handleCorrespondenceAddr = (event, index) => {
+  const handleCorrespondenceAddrChkbox = (event, index) => {
     const checked = event.target.checked;
     if (!checked) {
-      return setCorespondnceAddr(initialCorespondnceAddr);
+      return setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox);
     }
 
-    setCorespondnceAddr({ [index]: 1 })
+    setCorespondnceAddrChkbox({ [index]: index })  // it holds index of CorespondnceAddr div  whose checkbox is checked 
   }
 
 
@@ -168,7 +185,6 @@ function ManageProfileForm() {
                     <h3>
                       <svg onClick={() => {
                         append(initOfficeAddr);
-                        // setIconCount(iconCount + 1);
                         setIconCount((prevIconCount) => prevIconCount + 1);
                       }} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
@@ -187,7 +203,7 @@ function ManageProfileForm() {
                       // correspondence_address checkboxes handling...
                       let isChecked = false
                       setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
-                      if (corespondnceAddr.hasOwnProperty(index)) {
+                      if (corespondnceAddrChkbox.hasOwnProperty(index)) {
                         isChecked = true
                         setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
                       }
@@ -253,7 +269,7 @@ function ManageProfileForm() {
                             <div className="col">
                               <div className="form-check">
                                 <label className="form-check-label" htmlFor="">Correspondence Address same as office address</label>
-                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`userOfficeAddress[${index}].correspondence_address`)} onChange={(event) => handleCorrespondenceAddr(event, index)} />
+                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`userOfficeAddress[${index}].correspondence_address`)} onChange={(event) => handleCorrespondenceAddrChkbox(event, index)} />
                               </div>
                             </div>
                           </div>
