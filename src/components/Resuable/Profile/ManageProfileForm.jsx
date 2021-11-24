@@ -32,6 +32,12 @@ function ManageProfileForm() {
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
 
+  const initialCorrespndenceProvince = [];
+  const [correspndenceProvinces, setCorrespndenceProvinces] = useState(initialCorrespndenceProvince)
+
+  // disable Fields of correspondence address if 'corespondnceAddrChkbox' is checked
+  const [readOnlyFields, setReadOnlyFields] = useState(false)
+
   // it holds index of CorespondnceAddr div  whose checkbox is checked
   const initialCorespondnceAddrChkbox = {};
   const [corespondnceAddrChkbox, setCorespondnceAddrChkbox] = useState(initialCorespondnceAddrChkbox)
@@ -39,13 +45,13 @@ function ManageProfileForm() {
   // count of 'plus minus icon' of office addresses
   const [iconCount, setIconCount] = useState(0)
 
-  const { register, setValue, control, handleSubmit, reset, watch, formState: { errors } } = useForm({
+  const { register, getValues, setValue, control, handleSubmit, reset, watch, formState: { errors, isDirty, dirtyFields, isSubmitting, touchedFields, submitCount } } = useForm({
     resolver: yupResolver(schema),
   });
 
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     control,
-    name: "userOfficeAddress"
+    name: "office_address"
   });
 
   const submitForm = (data) => {
@@ -58,69 +64,82 @@ function ManageProfileForm() {
     province: "",
     city: "",
     postcode: "",
-    correspondence_address: false,
+    correspondence_addr: false,
   };
   React.useEffect(() => {
     reset({
-      userOfficeAddress: [initOfficeAddr]
+      office_address: [initOfficeAddr]
     });
   }, []);
 
   const handleIconClick = (action, index) => {
     if (action === 'increment') {
-      append(initOfficeAddr);
-    } else {
-      // delete state array
-      delete provinces[index]
-
-      let newProvinces = {};
-      let i = 0;
-      for (const key in provinces) {
-        newProvinces[i] = provinces[key]
-        i++;
-      }
-      setProvince(newProvinces)
-
-      // remove index form 'fields' array
-      remove(index)
-
-      // when click on 'minus icon', remove index form 'corespondnceAddrChkbox' array if it exists
-      if (Object.keys(corespondnceAddrChkbox).length !== 0) { // if obj is not empty
-        const chkBoxIndex = Object.values(corespondnceAddrChkbox);
-        if (index < chkBoxIndex) {
-          setCorespondnceAddrChkbox({ [index]: chkBoxIndex - 1 })
-        }
-        if (index == chkBoxIndex) {
-          setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox)
-        }
-      }
-
-      setIconCount((prevIconCount) => prevIconCount - 1);
+      return append(initOfficeAddr);
     }
+
+    // delete state array
+    delete provinces[index]
+
+    let newProvinces = {};
+    let i = 0;
+    for (const key in provinces) {
+      newProvinces[i] = provinces[key]
+      i++;
+    }
+    setProvince(newProvinces)
+
+    // remove index form 'fields' array
+    remove(index)
+
+    // when click on 'minus icon', remove index form 'corespondnceAddrChkbox' array if it exists
+    if (Object.keys(corespondnceAddrChkbox).length !== 0) { // if obj is not empty
+      const chkBoxIndex = Object.values(corespondnceAddrChkbox);
+      if (index < chkBoxIndex) {
+        setCorespondnceAddrChkbox({ [index]: chkBoxIndex - 1 })
+      }
+      if (index == chkBoxIndex) {
+        setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox)
+      }
+    }
+
+    setIconCount((prevIconCount) => prevIconCount - 1);
   }
 
   const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
     if (event.target.value == '') {
-      setProvince(initialProvince)
-    } else {
-      const result = countryStates.filter(country => country.country == event.target.value);
-      const allProvinces = result[0].states;
-      setProvince({ ...provinces, [countryIndex]: allProvinces })
+      return setProvince(initialProvince)
     }
+
+    const result = countryStates.filter(country => country.country == event.target.value);
+    const allProvinces = result[0].states;
+    setProvince({ ...provinces, [countryIndex]: allProvinces })
+  }
+
+  const coreespondenceCountryHandler = (event) => {
+    if (event.target.value == '') {
+      return setCorrespndenceProvinces(initialCorespondnceAddrChkbox)
+    }
+
+    const result = countryStates.filter(country => country.country == event.target.value);
+    const allProvinces = result[0].states;
+    setCorrespndenceProvinces(allProvinces)
   }
 
   const handleCorrespondenceAddrChkbox = (event, index) => {
     const checked = event.target.checked;
     if (!checked) {
+      setReadOnlyFields(false)
       return setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox);
     }
+
+    setReadOnlyFields(true)
+    console.log('fields');
+    console.log(getValues("office_address"));
 
     setCorespondnceAddrChkbox({ [index]: index })  // it holds index of CorespondnceAddr div  whose checkbox is checked 
   }
 
-
-  /////////////// work on Checkbox issue ///////////////////////////////////////////////
-  // clone  multiple office address and then select one of the chcek box then start removing some itmes then see the selected checkbox is gone
+  // By selectig checkbox of corrspondece checkboxm, append selected office addresse to correspondence adderess 
   ////////////// work on dynamic fields validations ////////////////////////////////////
 
   return (
@@ -200,12 +219,12 @@ function ManageProfileForm() {
                         statesDropdown = Object.values(provinces[index]);
                       }
 
-                      // correspondence_address checkboxes handling...
+                      // correspondence_addr checkboxes handling...
                       let isChecked = false
-                      setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
+                      setValue(`office_address[${index}].correspondence_addr`, isChecked)
                       if (corespondnceAddrChkbox.hasOwnProperty(index)) {
                         isChecked = true
-                        setValue(`userOfficeAddress[${index}].correspondence_address`, isChecked)
+                        setValue(`office_address[${index}].correspondence_addr`, isChecked)
                       }
 
                       let iconComp = (
@@ -223,14 +242,14 @@ function ManageProfileForm() {
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">Address Line</label> <span className="red">*</span>
-                              <input type="text" {...register(`userOfficeAddress[${index}].address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" />
+                              <input type="text" {...register(`office_address[${index}].address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" />
                             </div>
                           </div>
                           <br />
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">country</label>
-                              <select name="country" id="" {...register(`userOfficeAddress[${index}].country`)} className="form-control" onChange={(event) => countryHandler(event, index)}>
+                              <select name="country" id="" {...register(`office_address[${index}].country`)} className="form-control" onChange={(event) => countryHandler(event, index)}>
                                 <option value=""> --Select--</option>
                                 {
                                   countryStates.map((country, indx) => {
@@ -243,7 +262,7 @@ function ManageProfileForm() {
                             </div>
                             <div className="col">
                               <label htmlFor="">Province</label>
-                              <select name="State" id="" {...register(`userOfficeAddress[${index}].province`)} className="form-control">
+                              <select name="State" id="" {...register(`office_address[${index}].province`)} className="form-control">
                                 <option value=""> --Select-- </option>
                                 {
                                   statesDropdown.map((state, indx) => {
@@ -256,11 +275,11 @@ function ManageProfileForm() {
                             </div>
                             <div className="col">
                               <label htmlFor="">City</label>
-                              <input type="text" {...register(`userOfficeAddress[${index}].city`)} className="form-control" id="" placeholder="Enter City" />
+                              <input type="text" {...register(`office_address[${index}].city`)} className="form-control" id="" placeholder="Enter City" />
                             </div>
                             <div className="col">
                               <label htmlFor="">PostCode</label>
-                              <input type="text" {...register(`userOfficeAddress[${index}].postcode`)} className="form-control" id="" placeholder="Enter PostCode" />
+                              <input type="text" {...register(`office_address[${index}].postcode`)} className="form-control" id="" placeholder="Enter PostCode" />
                             </div>
                           </div>
 
@@ -269,7 +288,7 @@ function ManageProfileForm() {
                             <div className="col">
                               <div className="form-check">
                                 <label className="form-check-label" htmlFor="">Correspondence Address same as office address</label>
-                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`userOfficeAddress[${index}].correspondence_address`)} onChange={(event) => handleCorrespondenceAddrChkbox(event, index)} />
+                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`office_address[${index}].correspondence_addr`)} onChange={(event) => handleCorrespondenceAddrChkbox(event, index)} />
                               </div>
                             </div>
                           </div>
@@ -278,6 +297,76 @@ function ManageProfileForm() {
                       )
                     })
                   }
+                </div>
+                <br />
+              </div>
+
+              <div className="corrsAddr my-4">
+                <div>
+                  <div className="col-md-6 float-start">
+                    <h3>
+                      <span>Correpondence Address </span>
+                      <svg xmlns="" width="16" height="16" fill="grey" className="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                      </svg>
+                    </h3>
+                  </div>
+                  <div className="col-md-6 float-end text-end ">
+                    <h3>
+                      <br />
+                    </h3>
+                  </div>
+                </div>
+                <div className="address_div">
+                  <div className="">
+                    <div className="col-md-6 float-end text-end ">
+                    </div>
+
+                    <div className="row">
+                      <div className="col">
+                        <label htmlFor="">Address Line</label> <span className="red">*</span>
+                        <input type="text" {...register(`correspondence_address.address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" readOnly={readOnlyFields} />
+                      </div>
+                    </div>
+                    <br />
+                    <div className="row">
+                      <div className="col">
+                        <label htmlFor="">country</label>
+                        <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)}>
+                          <option value=""> --Select--</option>
+                          {
+                            countryStates.map((country, indx) => {
+                              return (
+                                <option key={indx} value={country.country} > {country.country}</option>
+                              )
+                            })
+                          }
+                        </select>
+                      </div>
+                      <div className="col">
+                        <label htmlFor="">Province</label>
+                        <select name="State" id="" {...register(`correspondence_address.province`)} className="form-control">
+                          <option value=""> --Select-- </option>
+                          {
+                            correspndenceProvinces.map((state, indx) => {
+                              return (
+                                <option key={indx} value={state} > {state}</option>
+                              )
+                            })
+                          }
+                        </select>
+                      </div>
+                      <div className="col">
+                        <label htmlFor="">City</label>
+                        <input type="text" {...register(`correspondence_address.city`)} className="form-control" id="" placeholder="Enter City" />
+                      </div>
+                      <div className="col">
+                        <label htmlFor="">PostCode</label>
+                        <input type="text" {...register(`correspondence_address.postcode`)} className="form-control" id="" placeholder="Enter PostCode" />
+                      </div>
+                    </div>
+                    <br /><br />
+                  </div>
                 </div>
                 <br />
               </div>
