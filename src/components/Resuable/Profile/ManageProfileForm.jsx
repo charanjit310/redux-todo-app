@@ -29,6 +29,15 @@ const schema = yup.object().shape({
 // https://www.youtube.com/watch?v=3GtAE9RZHVc
 // https://www.youtube.com/watch?v=7fupPfocNy4
 function ManageProfileForm() {
+  const { register, getValues, setValue, control, handleSubmit, reset, watch, formState: { errors, isDirty, dirtyFields, isSubmitting, touchedFields, submitCount } } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    control,
+    name: "office_address"
+  });
+
   const initialProvince = {};
   const [provinces, setProvince] = useState(initialProvince)
 
@@ -45,19 +54,6 @@ function ManageProfileForm() {
   // count of 'plus minus icon' of office addresses
   const [iconCount, setIconCount] = useState(0)
 
-  const { register, getValues, setValue, control, handleSubmit, reset, watch, formState: { errors, isDirty, dirtyFields, isSubmitting, touchedFields, submitCount } } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-    control,
-    name: "office_address"
-  });
-
-  const submitForm = (data) => {
-    console.log(data);
-  }
-
   const initOfficeAddr = {
     address_line: "",
     country: "",
@@ -66,6 +62,8 @@ function ManageProfileForm() {
     postcode: "",
     correspondence_addr: false,
   };
+  const [corespondnceAddrData, setCorespondnceAddrData] = useState(initOfficeAddr)
+
   React.useEffect(() => {
     reset({
       office_address: [initOfficeAddr]
@@ -105,6 +103,35 @@ function ManageProfileForm() {
     setIconCount((prevIconCount) => prevIconCount - 1);
   }
 
+  // setCorespondnceAddrData when 'CoresAddre same as offce addr' checkbox is checked
+  const onchangeFeldsHandler = (event, index, action, value = corespondnceAddrData.country) => {
+    console.log('onchangeFelds');
+    const offcAddr = getValues("office_address");
+    setCorespondnceAddrData(offcAddr[index])
+
+    if (action === "provinceHandler") {
+      setValue(`correspondence_address.province`, event.target.value)
+    } else if (action === "countryHandler") {
+      setValue(`correspondence_address.country`, event.target.value)
+
+      // setCorrespndenceProvinces when 'CoresAddre same as offce addr' checkbox is checked
+      const result = countryStates.filter(country => country.country == event.target.value);
+      const allProvinces = result[0]?.states;
+      if (typeof allProvinces !== "undefined") {
+        setCorrespndenceProvinces(allProvinces)
+      }
+    } else if (action === "inputHandler") {
+      const inputName = event.target.name.split(".");
+      if (inputName[1] === 'address_line') {
+        setValue(`correspondence_address.address_line`, event.target.value)
+      } else if (inputName[1] === 'city') {
+        setValue(`correspondence_address.city`, event.target.value)
+      } if (inputName[1] === 'postcode') {
+        setValue(`correspondence_address.postcode`, event.target.value)
+      }
+    }
+  }
+
   const countryHandler = (event, countryIndex) => { // countryIndex is index where country dormdown exists in DOM 
     if (event.target.value == '') {
       return setProvince(initialProvince)
@@ -113,6 +140,8 @@ function ManageProfileForm() {
     const result = countryStates.filter(country => country.country == event.target.value);
     const allProvinces = result[0].states;
     setProvince({ ...provinces, [countryIndex]: allProvinces })
+
+    onchangeFeldsHandler(event, countryIndex, 'countryHandler')
   }
 
   const coreespondenceCountryHandler = (event) => {
@@ -132,11 +161,13 @@ function ManageProfileForm() {
       return setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox);
     }
 
+    // it holds index when CorespondnceAddr div  whose checkbox is checked 
+    setCorespondnceAddrChkbox({ [index]: index })
     setReadOnlyFields(true)
-    console.log('fields');
-    console.log(getValues("office_address"));
+  }
 
-    setCorespondnceAddrChkbox({ [index]: index })  // it holds index of CorespondnceAddr div  whose checkbox is checked 
+  const submitForm = (data) => {
+    console.log(data);
   }
 
   // By selectig checkbox of corrspondece checkboxm, append selected office addresse to correspondence adderess 
@@ -190,7 +221,7 @@ function ManageProfileForm() {
                 </div>
               </div>
 
-              <div className="OfficeAddress my-4">
+              <div className="OfficeAddress my-3">
                 <div>
                   <div className="col-md-6 float-start">
                     <h3>
@@ -242,14 +273,26 @@ function ManageProfileForm() {
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">Address Line</label> <span className="red">*</span>
-                              <input type="text" {...register(`office_address[${index}].address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" />
+                              <input type="text" {...register(`office_address[${index}].address_line`)}
+                                className="form-control" id=""
+                                aria-describedby="emailHelp"
+                                placeholder="Enter First name"
+                                onChange={(event) => {
+                                  onchangeFeldsHandler(event, index, 'inputHandler')
+                                }}
+                              />
                             </div>
                           </div>
                           <br />
                           <div className="row">
                             <div className="col">
                               <label htmlFor="">country</label>
-                              <select name="country" id="" {...register(`office_address[${index}].country`)} className="form-control" onChange={(event) => countryHandler(event, index)}>
+                              <select name="country" id="" {...register(`office_address[${index}].country`)}
+                                className="form-control"
+                                onChange={(event) =>
+                                  countryHandler(event, index)
+                                }
+                              >
                                 <option value=""> --Select--</option>
                                 {
                                   countryStates.map((country, indx) => {
@@ -262,7 +305,12 @@ function ManageProfileForm() {
                             </div>
                             <div className="col">
                               <label htmlFor="">Province</label>
-                              <select name="State" id="" {...register(`office_address[${index}].province`)} className="form-control">
+                              <select name="State" id="" {...register(`office_address[${index}].province`)}
+                                className="form-control"
+                                onChange={(event) =>
+                                  onchangeFeldsHandler(event, index, 'provinceHandler')
+                                }
+                              >
                                 <option value=""> --Select-- </option>
                                 {
                                   statesDropdown.map((state, indx) => {
@@ -275,11 +323,23 @@ function ManageProfileForm() {
                             </div>
                             <div className="col">
                               <label htmlFor="">City</label>
-                              <input type="text" {...register(`office_address[${index}].city`)} className="form-control" id="" placeholder="Enter City" />
+                              <input type="text" {...register(`office_address[${index}].city`)}
+                                className="form-control"
+                                id="" placeholder="Enter City"
+                                onChange={(event) => {
+                                  onchangeFeldsHandler(event, index, 'inputHandler')
+                                }}
+                              />
                             </div>
                             <div className="col">
                               <label htmlFor="">PostCode</label>
-                              <input type="text" {...register(`office_address[${index}].postcode`)} className="form-control" id="" placeholder="Enter PostCode" />
+                              <input type="text" {...register(`office_address[${index}].postcode`)}
+                                className="form-control"
+                                id="" placeholder="Enter PostCode"
+                                onChange={(event) => {
+                                  onchangeFeldsHandler(event, index, 'inputHandler')
+                                }}
+                              />
                             </div>
                           </div>
 
@@ -298,7 +358,6 @@ function ManageProfileForm() {
                     })
                   }
                 </div>
-                <br />
               </div>
 
               <div className="corrsAddr my-4">

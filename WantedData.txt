@@ -190,8 +190,11 @@ Optional chaining (?.)
     console.log(disneyCharacter) // {Mickey Mouse: 'Happy'}    
     -------------------------------------------------------
 
-// checking if object is empty
+// check if object is empty
 Object.keys(userData).length === 0 
+
+// check if a JavaScript variable is NOT undefined
+if(typeof lastname !== "undefined")
 
 // loop through object :--> convert object to array then loop through using any array methode
   Object.keys(provinces).map((key, index) => {
