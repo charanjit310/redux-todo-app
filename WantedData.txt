@@ -242,11 +242,16 @@ if(typeof lastname !== "undefined")
 // Change dropdown to fisrt index '--select--' value
     setValue(`office_address.${countryIndex}.province`, "") 
 
+// check if the value exists in a object
+    const isExists = Object.values(corespondnceAddrChkbox).includes(index)
 
 
+1. How to fill ITR
+2. Should i use the Lodash library
+3. Or make the commonly used functions in saperate file 
 
 Greetings Emma,
-I hope you are doing great. I connected with you because I’m looking for work in and thought you might be able to help. Will you look at my profile and tell me if you have anything  for me?
+I hope you are doing great. I connected with you because I’m looking for work and thought you might be able to help. Will you look at my profile and tell me if you have anything  for me?
 
 ----------------------------------------- objectToFormData ----------------------------
 var formData = new FormData();

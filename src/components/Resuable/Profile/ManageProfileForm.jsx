@@ -98,6 +98,8 @@ function ManageProfileForm() {
       }
       if (index == chkBoxIndex) {
         setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox)
+        setReadOnlyFields(false)
+        updateCorespondnceAddr(index, initOfficeAddr)
       }
     }
 
@@ -106,8 +108,10 @@ function ManageProfileForm() {
 
   // setCorespondnceAddrData when 'CoresAddre same as offce addr' checkbox is checked
   const onchangeFeldsHandler = (event, index, action) => {
-    if (readOnlyFields) {
-      console.log('onchangeFelds');
+    // check if the index of currnettly being filled office addresss is exists in corespondnceAddrChkbox object
+    const isExists = Object.values(corespondnceAddrChkbox).includes(index)
+
+    if (readOnlyFields && isExists) {
       setCorespondnceAddrData({})
 
       if (action === "provinceHandler") {
