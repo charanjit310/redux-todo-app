@@ -198,7 +198,6 @@ if(typeof lastname !== "undefined")
 
 // loop through object :--> convert object to array then loop through using any array methode
   Object.keys(provinces).map((key, index) => {
-    console.log(`-----------------`);
     console.log(`${key}: ${provinces[key]}`);
   });
 
@@ -228,6 +227,27 @@ if(typeof lastname !== "undefined")
 
   model,
   react portle
+
+
+ // Disable select dropdown:- 
+  As the standard 'select element' does not support it. If you need it, you will most likely 
+  either need to code it yourself, or as you say, disable the element and use a hidden input
+  Solution:- Disable the element and use a hidden input
+    <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)} disabled={true}>
+      <option value="aaa"> --aaaa--</option>
+      <option value="sss"> --ssss--</option>
+    </select>
+    <input type="hidden" {...register(`correspondence_address.country`)} className="form-control" id="" value="" />
+
+// Change dropdown to fisrt index '--select--' value
+    setValue(`office_address.${countryIndex}.province`, "") 
+
+
+
+
+Greetings Emma,
+I hope you are doing great. I connected with you because I’m looking for work in and thought you might be able to help. Will you look at my profile and tell me if you have anything  for me?
+
 ----------------------------------------- objectToFormData ----------------------------
 var formData = new FormData();
 function objectToFormData(obj, rootName) {

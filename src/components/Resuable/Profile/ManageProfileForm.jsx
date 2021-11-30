@@ -54,6 +54,8 @@ function ManageProfileForm() {
   // count of 'plus minus icon' of office addresses
   const [iconCount, setIconCount] = useState(0)
 
+  const [corespondnceAddrData, setCorespondnceAddrData] = useState({})
+
   const initOfficeAddr = {
     address_line: "",
     country: "",
@@ -62,7 +64,6 @@ function ManageProfileForm() {
     postcode: "",
     correspondence_addr: false,
   };
-  const [corespondnceAddrData, setCorespondnceAddrData] = useState(initOfficeAddr)
 
   React.useEffect(() => {
     reset({
@@ -104,30 +105,35 @@ function ManageProfileForm() {
   }
 
   // setCorespondnceAddrData when 'CoresAddre same as offce addr' checkbox is checked
-  const onchangeFeldsHandler = (event, index, action, value = corespondnceAddrData.country) => {
-    console.log('onchangeFelds');
-    const offcAddr = getValues("office_address");
-    setCorespondnceAddrData(offcAddr[index])
+  const onchangeFeldsHandler = (event, index, action) => {
+    if (readOnlyFields) {
+      console.log('onchangeFelds');
+      setCorespondnceAddrData({})
 
-    if (action === "provinceHandler") {
-      setValue(`correspondence_address.province`, event.target.value)
-    } else if (action === "countryHandler") {
-      setValue(`correspondence_address.country`, event.target.value)
+      if (action === "provinceHandler") {
+        setValue(`correspondence_address.province`, event.target.value)
+      } else if (action === "countryHandler") {
+        setValue(`correspondence_address.country`, event.target.value)
 
-      // setCorrespndenceProvinces when 'CoresAddre same as offce addr' checkbox is checked
-      const result = countryStates.filter(country => country.country == event.target.value);
-      const allProvinces = result[0]?.states;
-      if (typeof allProvinces !== "undefined") {
-        setCorrespndenceProvinces(allProvinces)
-      }
-    } else if (action === "inputHandler") {
-      const inputName = event.target.name.split(".");
-      if (inputName[1] === 'address_line') {
-        setValue(`correspondence_address.address_line`, event.target.value)
-      } else if (inputName[1] === 'city') {
-        setValue(`correspondence_address.city`, event.target.value)
-      } if (inputName[1] === 'postcode') {
-        setValue(`correspondence_address.postcode`, event.target.value)
+        // setCorrespndenceProvinces when 'CoresAddre same as offce addr' checkbox is checked
+        const result = countryStates.filter(country => country.country == event.target.value);
+        const allProvinces = result[0]?.states;
+        if (typeof allProvinces !== "undefined") {
+          setCorrespndenceProvinces(allProvinces)
+        }
+
+        // change dropdown to fisrt index '--select--'
+        setValue(`correspondence_address.province`, "")
+
+      } else if (action === "inputHandler") {
+        const inputName = event.target.name.split(".");
+        if (inputName[1] === 'address_line') {
+          setValue(`correspondence_address.address_line`, event.target.value)
+        } else if (inputName[1] === 'city') {
+          setValue(`correspondence_address.city`, event.target.value)
+        } if (inputName[1] === 'postcode') {
+          setValue(`correspondence_address.postcode`, event.target.value)
+        }
       }
     }
   }
@@ -140,6 +146,9 @@ function ManageProfileForm() {
     const result = countryStates.filter(country => country.country == event.target.value);
     const allProvinces = result[0].states;
     setProvince({ ...provinces, [countryIndex]: allProvinces })
+
+    // change dropdown to fisrt index '--select--'
+    setValue(`office_address.${countryIndex}.province`, "")
 
     onchangeFeldsHandler(event, countryIndex, 'countryHandler')
   }
@@ -158,12 +167,33 @@ function ManageProfileForm() {
     const checked = event.target.checked;
     if (!checked) {
       setReadOnlyFields(false)
+      updateCorespondnceAddr(index, initOfficeAddr)
       return setCorespondnceAddrChkbox(initialCorespondnceAddrChkbox);
     }
 
     // it holds index when CorespondnceAddr div  whose checkbox is checked 
     setCorespondnceAddrChkbox({ [index]: index })
     setReadOnlyFields(true)
+
+    const offcAddr = getValues("office_address");
+    const officeAddress = offcAddr[index]
+    updateCorespondnceAddr(index, officeAddress)
+  }
+
+  // updateCorespondnceAddr when 'CoresAddre same as offce addr' checkbox is checked
+  const updateCorespondnceAddr = (index, officeAddress) => {
+    setValue(`correspondence_address.country`, officeAddress.country)
+    setValue(`correspondence_address.address_line`, officeAddress.address_line)
+    setValue(`correspondence_address.city`, officeAddress.city)
+    setValue(`correspondence_address.postcode`, officeAddress.postcode)
+
+    // set correspondence_address.province
+    const result = countryStates.filter(country => country.country == officeAddress.country);
+    const allProvinces = result[0]?.states;
+    if (typeof allProvinces !== "undefined") {
+      setCorrespndenceProvinces(allProvinces)
+    }
+    setValue(`correspondence_address.province`, officeAddress.province)
   }
 
   const submitForm = (data) => {
@@ -171,6 +201,7 @@ function ManageProfileForm() {
   }
 
   // By selectig checkbox of corrspondece checkboxm, append selected office addresse to correspondence adderess 
+  // theme toggle
   ////////////// work on dynamic fields validations ////////////////////////////////////
 
   return (
@@ -391,7 +422,7 @@ function ManageProfileForm() {
                     <div className="row">
                       <div className="col">
                         <label htmlFor="">country</label>
-                        <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)}>
+                        <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)} disabled={readOnlyFields}>
                           <option value=""> --Select--</option>
                           {
                             countryStates.map((country, indx) => {
@@ -401,10 +432,12 @@ function ManageProfileForm() {
                             })
                           }
                         </select>
+                        <input type="hidden" {...register(`correspondence_address.country`)} className="form-control" id="" value="" />
+
                       </div>
                       <div className="col">
                         <label htmlFor="">Province</label>
-                        <select name="State" id="" {...register(`correspondence_address.province`)} className="form-control">
+                        <select name="State" id="" {...register(`correspondence_address.province`)} className="form-control" disabled={readOnlyFields}>
                           <option value=""> --Select-- </option>
                           {
                             correspndenceProvinces.map((state, indx) => {
@@ -414,14 +447,16 @@ function ManageProfileForm() {
                             })
                           }
                         </select>
+                        <input type="hidden" {...register(`correspondence_address.province`)} className="form-control" value="" />
+
                       </div>
                       <div className="col">
                         <label htmlFor="">City</label>
-                        <input type="text" {...register(`correspondence_address.city`)} className="form-control" id="" placeholder="Enter City" />
+                        <input type="text" {...register(`correspondence_address.city`)} className="form-control" id="" placeholder="Enter City" readOnly={readOnlyFields} />
                       </div>
                       <div className="col">
                         <label htmlFor="">PostCode</label>
-                        <input type="text" {...register(`correspondence_address.postcode`)} className="form-control" id="" placeholder="Enter PostCode" />
+                        <input type="text" {...register(`correspondence_address.postcode`)} className="form-control" id="" placeholder="Enter PostCode" readOnly={readOnlyFields} />
                       </div>
                     </div>
                     <br /><br />
