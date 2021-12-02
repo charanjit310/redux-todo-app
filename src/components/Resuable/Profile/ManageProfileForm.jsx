@@ -1,9 +1,13 @@
+import axios from 'axios'
 import React, { useState } from 'react'
 import { countryStates } from '../CountryStates'
 
 import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { objToFormdata } from '../../../Services/formData.service';
+import { AuthsService } from '../../../Services/auth.service';
+
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const schema = yup.object().shape({
   // first_name: yup.string().required('First name  is required'),
@@ -202,10 +206,33 @@ function ManageProfileForm() {
 
   const submitForm = (data) => {
     console.log(data);
+    console.log('------------------------- formdata service starts here --------------------------------');
+    const formData = objToFormdata.fnObjToFormdata(data);
+    // console.log(formData);
+    for (let [key, value] of formData) { // log FormData 
+      console.log(`${key}: ${value}`)
+    }
+    // return false;
+
+    axios.post(`${AuthsService.baseURL}save-personal-info`, formData, AuthsService.formDataConfig)
+      .then((response) => {
+        console.log(response);
+        // if (response.data.statusCode == 200) {
+        //   history.replace('/home')
+        // }
+      }).catch((error) => {
+        console.log(error);
+        // setErrorMsg(error.response.data.message)
+        // setLoader(false);
+      });
+
+    return;
   }
 
   // By selectig checkbox of corrspondece checkboxm, append selected office addresse to correspondence adderess 
-  // theme toggle
+  // Read about all concepts of Doccument, DOM, querrySelector etc. 
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
+  // https://www.javascripttutorial.net/javascript-dom/
   ////////////// work on dynamic fields validations ////////////////////////////////////
 
   return (
