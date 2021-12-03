@@ -205,25 +205,19 @@ function ManageProfileForm() {
   }
 
   const submitForm = (data) => {
-    console.log(data);
-    console.log('------------------------- formdata service starts here --------------------------------');
     const formData = objToFormdata.fnObjToFormdata(data);
-    // console.log(formData);
-    for (let [key, value] of formData) { // log FormData 
-      console.log(`${key}: ${value}`)
-    }
-    // return false;
+    // for (let [key, value] of formData) { // log FormData 
+    //   console.log(`${key}: ${value}`)
+    // }
 
     axios.post(`${AuthsService.baseURL}save-personal-info`, formData, AuthsService.formDataConfig)
       .then((response) => {
         console.log(response);
-        // if (response.data.statusCode == 200) {
-        //   history.replace('/home')
-        // }
+        if (response.data.statusCode == 200) {
+          alert('Profile updated !!!!!!');
+        }
       }).catch((error) => {
         console.log(error);
-        // setErrorMsg(error.response.data.message)
-        // setLoader(false);
       });
 
     return;
