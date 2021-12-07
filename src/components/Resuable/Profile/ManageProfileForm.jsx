@@ -225,16 +225,15 @@ function ManageProfileForm() {
       setValue(`phone`, user.phone)
       setValue(`mobile`, user.phone)
 
-      console.log(user.user_addresses);
       const user_ofc_addr = user.user_addresses.filter(addr => addr.type == 0);
+      const user_corres_addr = user.user_addresses.filter(addr => addr.type == 1);
 
-      console.log('user_ofc_addr');
-      console.log(user_ofc_addr);
       let ofc_addr_updted = [];
       let newProvinces = {};
       let i = 0;
+      let checkboxIndex = null;
+
       for (const key in user_ofc_addr) {
-        console.log(user_ofc_addr[key]);
         ofc_addr_updted[key] = {
           ...user_ofc_addr[key],
           postcode: user_ofc_addr[key].post_code,
@@ -244,25 +243,23 @@ function ManageProfileForm() {
         // set correspondence_address.province
         const result = countryStates.filter(country => country.country == user_ofc_addr[key].country);
         const allProvinces = result[0]?.states;
-        // console.log('allProvinces');
-        console.log(allProvinces);
         if (typeof allProvinces !== "undefined") {
           setCorrespndenceProvinces(allProvinces)
         }
         newProvinces[i] = allProvinces
         i++;
-      }
-      // console.log(newProvinces);
-      setProvince(newProvinces)
-      // console.log('ofc_addr_updted');
-      // console.log(ofc_addr_updted);
 
+        // set check box if checkbox was already checked
+        if (user_ofc_addr[key].post_code == user_corres_addr[0].post_code) {
+          checkboxIndex = key
+        }
+      }
+      setProvince(newProvinces)
       // setValue("office_address", [{ address_line: "setValue" }]);
       setValue("office_address", ofc_addr_updted, { shouldDirty: true });
 
-      const user_corres_addr = user.user_addresses.filter(addr => addr.type == 1);
+      // set correspondence_address if correspondence_address was already had value
       if (!!user_corres_addr.length) {
-        console.log(user_corres_addr);
         setValue(`correspondence_address.country`, user_corres_addr[0].country)
         setValue(`correspondence_address.address_line`, user_corres_addr[0].address_line1)
         setValue(`correspondence_address.city`, user_corres_addr[0].city)
@@ -276,6 +273,13 @@ function ManageProfileForm() {
         }
         setValue(`correspondence_address.province`, user_corres_addr[0].province, { shouldDirty: true })
       }
+
+      // set check box if checkbox was already checked
+      if (checkboxIndex) {
+        setCorespondnceAddrChkbox({ [checkboxIndex]: parseInt(checkboxIndex) })
+        setReadOnlyFields(true)
+      }
+
       // setUserData(response.data.data[0]);
     }).catch((error) => {
       console.log(error);
@@ -289,8 +293,8 @@ function ManageProfileForm() {
     // for (let [key, value] of formData) { // log FormData 
     //   console.log(`${key}: ${value}`)
     // }
-    alert('Profile updated !!!!!!');
-    return false;
+    // alert('Profile updated !!!!!!');
+    // return false;
 
     axios.post(`${AuthsService.baseURL}save-personal-info`, formData, AuthsService.formDataConfig)
       .then((response) => {

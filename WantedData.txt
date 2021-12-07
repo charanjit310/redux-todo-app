@@ -248,9 +248,14 @@ if(typeof lastname !== "undefined")
 // get url parameters
   const { id } = match.params; 
 
+// You can just check if the variable has a truthy value or not. That means
+    if( value ) {
+    }
+    will evaluate to true if value is not: null,undefined,NaN,empty string (""),0,false
+    The above list represents all possible falsy values in ECMA-/Javascript. Find it in the specification at the ToBoolean section.
+
 1. How to fill ITR
 2. Should i use the Lodash library
-3. Or make the commonly used functions in saperate file 
 
 Greetings Emma,
 I hope you are doing great. I connected with you because I’m looking for work and thought you might be able to help. Will you look at my profile and tell me if you have anything  for me?
