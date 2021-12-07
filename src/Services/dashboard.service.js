@@ -32,9 +32,14 @@ const getUserById = async (id) => {
   return await axios.get(`/profile-details/${id}`)
 }
 
+const manageProfle = async () => {
+  return await axios.get(`/manage-profile`);
+}
+
 export const DashboardServices = {
   list,
   asyncList,
   deleteItem,
   getUserById,
+  manageProfle,
 }

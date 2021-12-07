@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { objToFormdata } from '../../../Services/formData.service';
 import { AuthsService } from '../../../Services/auth.service';
+import { DashboardServices } from '../../../Services/dashboard.service';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const schema = yup.object().shape({
@@ -33,6 +34,8 @@ const schema = yup.object().shape({
 // https://www.youtube.com/watch?v=3GtAE9RZHVc
 // https://www.youtube.com/watch?v=7fupPfocNy4
 function ManageProfileForm() {
+  const { manageProfle } = DashboardServices;
+
   const { register, getValues, setValue, control, handleSubmit, reset, watch, formState: { errors, isDirty, dirtyFields, isSubmitting, touchedFields, submitCount } } = useForm({
     resolver: yupResolver(schema),
   });
@@ -59,6 +62,7 @@ function ManageProfileForm() {
   const [iconCount, setIconCount] = useState(0)
 
   const [corespondnceAddrData, setCorespondnceAddrData] = useState({})
+  const [loader, setLoader] = useState(true);
 
   const initOfficeAddr = {
     address_line: "",
@@ -189,7 +193,7 @@ function ManageProfileForm() {
   }
 
   // updateCorespondnceAddr when 'CoresAddre same as offce addr' checkbox is checked
-  const updateCorespondnceAddr = (index, officeAddress) => {
+  const updateCorespondnceAddr = (index = null, officeAddress) => {
     setValue(`correspondence_address.country`, officeAddress.country)
     setValue(`correspondence_address.address_line`, officeAddress.address_line)
     setValue(`correspondence_address.city`, officeAddress.city)
@@ -204,11 +208,89 @@ function ManageProfileForm() {
     setValue(`correspondence_address.province`, officeAddress.province)
   }
 
+  // set value for form while editing or if user has alresy pre filled valurs
+  React.useEffect(() => {
+    manageProfle().then((response) => {
+      console.log(response.data.data);
+      if (!Object.keys(response.data.data).length) {
+        alert('Invalid User')
+      }
+      setLoader(false);
+      const user = response.data.data;
+
+      setValue(`first_name`, user.first_name)
+      setValue(`middle_name`, user.middle_name)
+      setValue(`last_name`, user.last_name)
+      setValue(`email`, user.email)
+      setValue(`phone`, user.phone)
+      setValue(`mobile`, user.phone)
+
+      console.log(user.user_addresses);
+      const user_ofc_addr = user.user_addresses.filter(addr => addr.type == 0);
+
+      console.log('user_ofc_addr');
+      console.log(user_ofc_addr);
+      let ofc_addr_updted = [];
+      let newProvinces = {};
+      let i = 0;
+      for (const key in user_ofc_addr) {
+        console.log(user_ofc_addr[key]);
+        ofc_addr_updted[key] = {
+          ...user_ofc_addr[key],
+          postcode: user_ofc_addr[key].post_code,
+          address_line: user_ofc_addr[key].address_line1,
+        };
+
+        // set correspondence_address.province
+        const result = countryStates.filter(country => country.country == user_ofc_addr[key].country);
+        const allProvinces = result[0]?.states;
+        // console.log('allProvinces');
+        console.log(allProvinces);
+        if (typeof allProvinces !== "undefined") {
+          setCorrespndenceProvinces(allProvinces)
+        }
+        newProvinces[i] = allProvinces
+        i++;
+      }
+      // console.log(newProvinces);
+      setProvince(newProvinces)
+      // console.log('ofc_addr_updted');
+      // console.log(ofc_addr_updted);
+
+      // setValue("office_address", [{ address_line: "setValue" }]);
+      setValue("office_address", ofc_addr_updted, { shouldDirty: true });
+
+      const user_corres_addr = user.user_addresses.filter(addr => addr.type == 1);
+      if (!!user_corres_addr.length) {
+        console.log(user_corres_addr);
+        setValue(`correspondence_address.country`, user_corres_addr[0].country)
+        setValue(`correspondence_address.address_line`, user_corres_addr[0].address_line1)
+        setValue(`correspondence_address.city`, user_corres_addr[0].city)
+        setValue(`correspondence_address.postcode`, user_corres_addr[0].post_code)
+
+        // set correspondence_address.province
+        const result = countryStates.filter(country => country.country == user_corres_addr[0].country);
+        const allProvinces = result[0]?.states;
+        if (typeof allProvinces !== "undefined") {
+          setCorrespndenceProvinces(allProvinces)
+        }
+        setValue(`correspondence_address.province`, user_corres_addr[0].province, { shouldDirty: true })
+      }
+      // setUserData(response.data.data[0]);
+    }).catch((error) => {
+      console.log(error);
+      setLoader(true);
+    });
+  }, [])
+
   const submitForm = (data) => {
+    console.log(data);
     const formData = objToFormdata.fnObjToFormdata(data);
     // for (let [key, value] of formData) { // log FormData 
     //   console.log(`${key}: ${value}`)
     // }
+    alert('Profile updated !!!!!!');
+    return false;
 
     axios.post(`${AuthsService.baseURL}save-personal-info`, formData, AuthsService.formDataConfig)
       .then((response) => {
@@ -228,275 +310,279 @@ function ManageProfileForm() {
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
   // https://www.javascripttutorial.net/javascript-dom/
   ////////////// work on dynamic fields validations ////////////////////////////////////
-
-  return (
-    <>
-      <div className="container forms-container">
-        <div className="row">
-          <div className="col-md-12 form-1 ">
-            <form onSubmit={handleSubmit(submitForm)}>
-              <div className="basicInfo">
-                <div className="row">
-                  <div className="col">
-                    <label htmlFor="">First name</label> <span className="red">*</span>
-                    <input type="text" {...register('first_name')} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" />
-                    <span className="red">{errors.first_name && errors.first_name.message}</span>
-                  </div>
-                  <div className="col">
-                    <label htmlFor="">Middle name</label>
-                    <input type="text" {...register('middle_name')} className="form-control" id="" placeholder="Enter Middle name" />
-                  </div>
-                  <div className="col">
-                    <label htmlFor="">Last name</label>
-                    <input type="text" {...register('last_name')} className="form-control" id="" placeholder="Enter Last name" />
-                    <span className="red">{errors.last_name && errors.last_name.message}</span>
-                  </div>
-                  <div className="col">
-                    <label htmlFor="">Email</label>
-                    <input type="email" {...register('email')} className="form-control" id="" placeholder="Enter Email" />
-                    <span className="red">{errors.email && errors.email.message}</span>
-                  </div>
-
+  const mainDiv = (
+    <div className="container forms-container">
+      <div className="row">
+        <div className="col-md-12 form-1 ">
+          <form onSubmit={handleSubmit(submitForm)}>
+            <div className="basicInfo">
+              <div className="row">
+                <div className="col">
+                  <label htmlFor="">First name</label> <span className="red">*</span>
+                  <input type="text" {...register('first_name')} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" />
+                  <span className="red">{errors.first_name && errors.first_name.message}</span>
                 </div>
-                <br />
-                <div className="row">
-                  <div className="col">
-                    <label htmlFor="">Phone</label>
-                    <input type="text" {...register('phone')} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Phone" />
-                    <span className="red">{errors.phone && errors.phone.message}</span>
-                  </div>
-                  <div className="col">
-                    <label htmlFor="">Mobile</label>
-                    <input type="text" {...register('mobile')} className="form-control" id="" placeholder="Enter Mobile" />
-                    <span className="red">{errors.mobile && errors.mobile.message}</span>
-                  </div>
-                  <div className="col">
-                    <label htmlFor="">Weak leaves</label>
-                    <input type="Date" {...register('weak_leaves')} className="form-control" id="" placeholder="Enter Weak leaves" />
-                  </div>
+                <div className="col">
+                  <label htmlFor="">Middle name</label>
+                  <input type="text" {...register('middle_name')} className="form-control" id="" placeholder="Enter Middle name" />
+                </div>
+                <div className="col">
+                  <label htmlFor="">Last name</label>
+                  <input type="text" {...register('last_name')} className="form-control" id="" placeholder="Enter Last name" />
+                  <span className="red">{errors.last_name && errors.last_name.message}</span>
+                </div>
+                <div className="col">
+                  <label htmlFor="">Email</label>
+                  <input type="email" {...register('email')} className="form-control" id="" placeholder="Enter Email" />
+                  <span className="red">{errors.email && errors.email.message}</span>
+                </div>
+
+              </div>
+              <br />
+              <div className="row">
+                <div className="col">
+                  <label htmlFor="">Phone</label>
+                  <input type="text" {...register('phone')} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter Phone" />
+                  <span className="red">{errors.phone && errors.phone.message}</span>
+                </div>
+                <div className="col">
+                  <label htmlFor="">Mobile</label>
+                  <input type="text" {...register('mobile')} className="form-control" id="" placeholder="Enter Mobile" />
+                  <span className="red">{errors.mobile && errors.mobile.message}</span>
+                </div>
+                <div className="col">
+                  <label htmlFor="">Weak leaves</label>
+                  <input type="Date" {...register('weak_leaves')} className="form-control" id="" placeholder="Enter Weak leaves" />
                 </div>
               </div>
+            </div>
 
-              <div className="OfficeAddress my-3">
-                <div>
-                  <div className="col-md-6 float-start">
-                    <h3>
-                      <span>Office Address </span>
-                      <svg xmlns="" width="16" height="16" fill="grey" className="bi bi-info-circle-fill" viewBox="0 0 16 16">
-                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
-                      </svg>
-                    </h3>
-                  </div>
-                  <div className="col-md-6 float-end text-end ">
-                    <h3>
-                      <svg onClick={() => {
-                        append(initOfficeAddr);
-                        setIconCount((prevIconCount) => prevIconCount + 1);
-                      }} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
-                      </svg>
-                    </h3>
-                  </div>
+            <div className="OfficeAddress my-3">
+              <div>
+                <div className="col-md-6 float-start">
+                  <h3>
+                    <span>Office Address </span>
+                    <svg xmlns="" width="16" height="16" fill="grey" className="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                    </svg>
+                  </h3>
                 </div>
-                <div className="address_div">
-                  {
-                    fields.map((item, index) => {
-                      let statesDropdown = [];
-                      if (provinces.hasOwnProperty(index)) {
-                        statesDropdown = Object.values(provinces[index]);
-                      }
+                <div className="col-md-6 float-end text-end ">
+                  <h3>
+                    <svg onClick={() => {
+                      append(initOfficeAddr);
+                      setIconCount((prevIconCount) => prevIconCount + 1);
+                    }} xmlns="" width="26" height="26" fill="grey" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                    </svg>
+                  </h3>
+                </div>
+              </div>
+              <div className="address_div">
+                {
+                  fields.map((item, index) => {
+                    let statesDropdown = [];
+                    if (provinces.hasOwnProperty(index)) {
+                      statesDropdown = Object.values(provinces[index]);
+                    }
 
-                      // correspondence_addr checkboxes handling...
-                      let isChecked = false
+                    // correspondence_addr checkboxes handling...
+                    let isChecked = false
+                    setValue(`office_address[${index}].correspondence_addr`, isChecked)
+                    if (corespondnceAddrChkbox.hasOwnProperty(index)) {
+                      isChecked = true
                       setValue(`office_address[${index}].correspondence_addr`, isChecked)
-                      if (corespondnceAddrChkbox.hasOwnProperty(index)) {
-                        isChecked = true
-                        setValue(`office_address[${index}].correspondence_addr`, isChecked)
-                      }
+                    }
 
-                      let iconComp = (
-                        <svg onClick={() => handleIconClick('decreement', index)} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
-                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
-                        </svg>
-                      )
-
-                      return (
-                        <div className="" key={item.id}>
-                          <div className="col-md-6 float-end text-end ">
-                            <h3>{iconCount ? iconComp : ''}</h3>
-                          </div>
-
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="">Address Line</label> <span className="red">*</span>
-                              <input type="text" {...register(`office_address[${index}].address_line`)}
-                                className="form-control" id=""
-                                aria-describedby="emailHelp"
-                                placeholder="Enter First name"
-                                onChange={(event) => {
-                                  onchangeFeldsHandler(event, index, 'inputHandler')
-                                }}
-                              />
-                            </div>
-                          </div>
-                          <br />
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="">country</label>
-                              <select name="country" id="" {...register(`office_address[${index}].country`)}
-                                className="form-control"
-                                onChange={(event) =>
-                                  countryHandler(event, index)
-                                }
-                              >
-                                <option value=""> --Select--</option>
-                                {
-                                  countryStates.map((country, indx) => {
-                                    return (
-                                      <option key={indx} value={country.country} > {country.country}</option>
-                                    )
-                                  })
-                                }
-                              </select>
-                            </div>
-                            <div className="col">
-                              <label htmlFor="">Province</label>
-                              <select name="State" id="" {...register(`office_address[${index}].province`)}
-                                className="form-control"
-                                onChange={(event) =>
-                                  onchangeFeldsHandler(event, index, 'provinceHandler')
-                                }
-                              >
-                                <option value=""> --Select-- </option>
-                                {
-                                  statesDropdown.map((state, indx) => {
-                                    return (
-                                      <option key={indx} value={state} > {state}</option>
-                                    )
-                                  })
-                                }
-                              </select>
-                            </div>
-                            <div className="col">
-                              <label htmlFor="">City</label>
-                              <input type="text" {...register(`office_address[${index}].city`)}
-                                className="form-control"
-                                id="" placeholder="Enter City"
-                                onChange={(event) => {
-                                  onchangeFeldsHandler(event, index, 'inputHandler')
-                                }}
-                              />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="">PostCode</label>
-                              <input type="text" {...register(`office_address[${index}].postcode`)}
-                                className="form-control"
-                                id="" placeholder="Enter PostCode"
-                                onChange={(event) => {
-                                  onchangeFeldsHandler(event, index, 'inputHandler')
-                                }}
-                              />
-                            </div>
-                          </div>
-
-                          <br />
-                          <div className="row">
-                            <div className="col">
-                              <div className="form-check">
-                                <label className="form-check-label" htmlFor="">Correspondence Address same as office address</label>
-                                <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`office_address[${index}].correspondence_addr`)} onChange={(event) => handleCorrespondenceAddrChkbox(event, index)} />
-                              </div>
-                            </div>
-                          </div>
-                          <br /><br />
-                        </div>
-                      )
-                    })
-                  }
-                </div>
-              </div>
-
-              <div className="corrsAddr my-4">
-                <div>
-                  <div className="col-md-6 float-start">
-                    <h3>
-                      <span>Correpondence Address </span>
-                      <svg xmlns="" width="16" height="16" fill="grey" className="bi bi-info-circle-fill" viewBox="0 0 16 16">
-                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                    let iconComp = (
+                      <svg onClick={() => handleIconClick('decreement', index)} xmlns="" width="26" height="26" fill="grey" className="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z" />
                       </svg>
-                    </h3>
-                  </div>
-                  <div className="col-md-6 float-end text-end ">
-                    <h3>
-                      <br />
-                    </h3>
-                  </div>
-                </div>
-                <div className="address_div">
-                  <div className="">
-                    <div className="col-md-6 float-end text-end ">
-                    </div>
+                    )
 
-                    <div className="row">
-                      <div className="col">
-                        <label htmlFor="">Address Line</label> <span className="red">*</span>
-                        <input type="text" {...register(`correspondence_address.address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" readOnly={readOnlyFields} />
-                      </div>
-                    </div>
-                    <br />
-                    <div className="row">
-                      <div className="col">
-                        <label htmlFor="">country</label>
-                        <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)} disabled={readOnlyFields}>
-                          <option value=""> --Select--</option>
-                          {
-                            countryStates.map((country, indx) => {
-                              return (
-                                <option key={indx} value={country.country} > {country.country}</option>
-                              )
-                            })
-                          }
-                        </select>
-                        <input type="hidden" {...register(`correspondence_address.country`)} className="form-control" id="" value="" />
+                    return (
+                      <div className="" key={item.id}>
+                        <div className="col-md-6 float-end text-end ">
+                          <h3>{iconCount ? iconComp : ''}</h3>
+                        </div>
 
-                      </div>
-                      <div className="col">
-                        <label htmlFor="">Province</label>
-                        <select name="State" id="" {...register(`correspondence_address.province`)} className="form-control" disabled={readOnlyFields}>
-                          <option value=""> --Select-- </option>
-                          {
-                            correspndenceProvinces.map((state, indx) => {
-                              return (
-                                <option key={indx} value={state} > {state}</option>
-                              )
-                            })
-                          }
-                        </select>
-                        <input type="hidden" {...register(`correspondence_address.province`)} className="form-control" value="" />
+                        <div className="row">
+                          <div className="col">
+                            <label htmlFor="">Address Line</label> <span className="red">*</span>
+                            <input type="text" {...register(`office_address[${index}].address_line`)}
+                              className="form-control" id=""
+                              aria-describedby="emailHelp"
+                              placeholder="Enter First name"
+                              onChange={(event) => {
+                                onchangeFeldsHandler(event, index, 'inputHandler')
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <br />
+                        <div className="row">
+                          <div className="col">
+                            <label htmlFor="">country</label>
+                            <select name="country" id="" {...register(`office_address[${index}].country`)}
+                              className="form-control"
+                              onChange={(event) =>
+                                countryHandler(event, index)
+                              }
+                            >
+                              <option value=""> --Select--</option>
+                              {
+                                countryStates.map((country, indx) => {
+                                  return (
+                                    <option key={indx} value={country.country} > {country.country}</option>
+                                  )
+                                })
+                              }
+                            </select>
+                          </div>
+                          <div className="col">
+                            <label htmlFor="Province">Province</label>
+                            <select name="State" id="" {...register(`office_address[${index}].province`)}
+                              className="form-control"
+                              onChange={(event) =>
+                                onchangeFeldsHandler(event, index, 'provinceHandler')
+                              }
+                            >
+                              <option value=""> --Select-- </option>
+                              {
+                                statesDropdown.map((state, indx) => {
+                                  return (
+                                    <option key={indx} value={state} > {state}</option>
+                                  )
+                                })
+                              }
+                            </select>
+                          </div>
+                          <div className="col">
+                            <label htmlFor="">City</label>
+                            <input type="text" {...register(`office_address[${index}].city`)}
+                              className="form-control"
+                              id="" placeholder="Enter City"
+                              onChange={(event) => {
+                                onchangeFeldsHandler(event, index, 'inputHandler')
+                              }}
+                            />
+                          </div>
+                          <div className="col">
+                            <label htmlFor="">PostCode</label>
+                            <input type="text" {...register(`office_address[${index}].postcode`)}
+                              className="form-control"
+                              id="" placeholder="Enter PostCode"
+                              onChange={(event) => {
+                                onchangeFeldsHandler(event, index, 'inputHandler')
+                              }}
+                            />
+                          </div>
+                        </div>
 
+                        <br />
+                        <div className="row">
+                          <div className="col">
+                            <div className="form-check">
+                              <label className="form-check-label" htmlFor="">Correspondence Address same as office address</label>
+                              <input type="checkbox" checked={isChecked} className="form-check-input" {...register(`office_address[${index}].correspondence_addr`)} onChange={(event) => handleCorrespondenceAddrChkbox(event, index)} />
+                            </div>
+                          </div>
+                        </div>
+                        <br /><br />
                       </div>
-                      <div className="col">
-                        <label htmlFor="">City</label>
-                        <input type="text" {...register(`correspondence_address.city`)} className="form-control" id="" placeholder="Enter City" readOnly={readOnlyFields} />
-                      </div>
-                      <div className="col">
-                        <label htmlFor="">PostCode</label>
-                        <input type="text" {...register(`correspondence_address.postcode`)} className="form-control" id="" placeholder="Enter PostCode" readOnly={readOnlyFields} />
-                      </div>
-                    </div>
-                    <br /><br />
-                  </div>
-                </div>
-                <br />
+                    )
+                  })
+                }
               </div>
+            </div>
 
-              <button className="btn btn-primary btnSubmit float-end" style={{ width: '152px' }} >
-                Save Deatails
-              </button>
-            </form>
-          </div>
+            <div className="corrsAddr my-4">
+              <div>
+                <div className="col-md-6 float-start">
+                  <h3>
+                    <span>Correpondence Address </span>
+                    <svg xmlns="" width="16" height="16" fill="grey" className="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                    </svg>
+                  </h3>
+                </div>
+                <div className="col-md-6 float-end text-end ">
+                  <h3>
+                    <br />
+                  </h3>
+                </div>
+              </div>
+              <div className="address_div">
+                <div className="">
+                  <div className="col-md-6 float-end text-end ">
+                  </div>
+
+                  <div className="row">
+                    <div className="col">
+                      <label htmlFor="">Address Line</label> <span className="red">*</span>
+                      <input type="text" {...register(`correspondence_address.address_line`)} className="form-control" id="" aria-describedby="emailHelp" placeholder="Enter First name" readOnly={readOnlyFields} />
+                    </div>
+                  </div>
+                  <br />
+                  <div className="row">
+                    <div className="col">
+                      <label htmlFor="">country</label>
+                      <select name="country" id="" {...register(`correspondence_address.country`)} className="form-control" onChange={(event) => coreespondenceCountryHandler(event)} disabled={readOnlyFields}>
+                        <option value=""> --Select--</option>
+                        {
+                          countryStates.map((country, indx) => {
+                            return (
+                              <option key={indx} value={country.country} > {country.country}</option>
+                            )
+                          })
+                        }
+                      </select>
+                      <input type="hidden" {...register(`correspondence_address.country`)} className="form-control" id="" value="" />
+
+                    </div>
+                    <div className="col">
+                      <label htmlFor="">Province</label>
+                      <select name="State" id="" {...register(`correspondence_address.province`)} className="form-control" disabled={readOnlyFields}>
+                        <option value=""> --Select-- </option>
+                        {
+                          correspndenceProvinces.map((state, indx) => {
+                            return (
+                              <option key={indx} value={state} > {state}</option>
+                            )
+                          })
+                        }
+                      </select>
+                      <input type="hidden" {...register(`correspondence_address.province`)} className="form-control" value="" />
+
+                    </div>
+                    <div className="col">
+                      <label htmlFor="">City</label>
+                      <input type="text" {...register(`correspondence_address.city`)} className="form-control" id="" placeholder="Enter City" readOnly={readOnlyFields} />
+                    </div>
+                    <div className="col">
+                      <label htmlFor="">PostCode</label>
+                      <input type="text" {...register(`correspondence_address.postcode`)} className="form-control" id="" placeholder="Enter PostCode" readOnly={readOnlyFields} />
+                    </div>
+                  </div>
+                  <br /><br />
+                </div>
+              </div>
+              <br />
+            </div>
+
+            <button className="btn btn-primary btnSubmit float-end" style={{ width: '152px' }} >
+              Save Deatails
+            </button>
+          </form>
         </div>
       </div>
+    </div>
+  )
+  return (
+    <>
+      {
+        loader ? <h1><b>Loading...</b></h1> : mainDiv
+      }
     </>
   )
 }
